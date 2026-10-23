@@ -6,9 +6,9 @@ import { parseNumericInput } from './numericUtils';
 import { debounce, Setting, TextComponent } from 'obsidian';
 
 export class VariableNumberSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	textComponent: TextComponent;
-	setting: VariableNumber;
+	settingEl!: Setting;
+	textComponent!: TextComponent;
+	setting!: VariableNumber;
 
 	render(): void {
 		if (!this.containerEl) return;

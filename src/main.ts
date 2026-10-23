@@ -23,13 +23,13 @@ import yaml from 'js-yaml';
 import { Command, Plugin } from 'obsidian';
 
 export default class CSSSettingsPlugin extends Plugin {
-	settingsManager: CSSSettingsManager;
-	settingsTab: CSSSettingsTab;
+	settingsManager!: CSSSettingsManager;
+	settingsTab!: CSSSettingsTab;
 	settingsList: ParsedCSSSettings[] = [];
 	errorList: ErrorList = [];
 	commandList: Command[] = [];
-	lightEl: HTMLElement;
-	darkEl: HTMLElement;
+	lightEl!: HTMLElement;
+	darkEl!: HTMLElement;
 
 	async onload() {
 		this.settingsManager = new CSSSettingsManager(this);

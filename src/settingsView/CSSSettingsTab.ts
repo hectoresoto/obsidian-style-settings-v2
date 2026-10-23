@@ -5,10 +5,10 @@ import { ParsedCSSSettings } from 'src/SettingHandlers';
 import { ErrorList } from 'src/Utils';
 
 export class CSSSettingsTab extends PluginSettingTab {
-	settingsMarkup: SettingsMarkup | null;
+	settingsMarkup!: SettingsMarkup | null;
 	plugin: CSSSettingsPlugin;
-	settings: ParsedCSSSettings[];
-	errorList: ErrorList;
+	settings!: ParsedCSSSettings[];
+	errorList!: ErrorList;
 
 	constructor(app: App, plugin: CSSSettingsPlugin) {
 		super(app, plugin);

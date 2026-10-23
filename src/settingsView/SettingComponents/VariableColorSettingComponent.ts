@@ -14,9 +14,9 @@ import Pickr from '@simonwep/pickr';
 import { Setting } from 'obsidian';
 
 export class VariableColorSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	setting: VariableColor;
-	pickr: Pickr | null;
+	settingEl!: Setting;
+	setting!: VariableColor;
+	pickr!: Pickr | null;
 
 	render(): void {
 		if (!this.containerEl) return;

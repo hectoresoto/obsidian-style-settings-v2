@@ -4,9 +4,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { MarkdownRenderer, Setting } from 'obsidian';
 
 export class InfoTextSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
+	settingEl!: Setting;
 
-	setting: InfoText;
+	setting!: InfoText;
 
 	render(): void {
 		if (!this.containerEl) return;

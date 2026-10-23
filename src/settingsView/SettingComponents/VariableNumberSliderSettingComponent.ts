@@ -5,9 +5,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { debounce, Setting, SliderComponent } from 'obsidian';
 
 export class VariableNumberSliderSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	sliderComponent: SliderComponent;
-	setting: VariableNumberSlider;
+	settingEl!: Setting;
+	sliderComponent!: SliderComponent;
+	setting!: VariableNumberSlider;
 
 	render(): void {
 		if (!this.containerEl) return;

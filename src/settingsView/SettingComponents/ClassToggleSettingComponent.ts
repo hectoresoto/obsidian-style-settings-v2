@@ -4,9 +4,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { Setting, ToggleComponent } from 'obsidian';
 
 export class ClassToggleSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	toggleComponent: ToggleComponent;
-	setting: ClassToggle;
+	settingEl!: Setting;
+	toggleComponent!: ToggleComponent;
+	setting!: ClassToggle;
 
 	render(): void {
 		if (!this.containerEl) return;
