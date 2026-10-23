@@ -19,8 +19,11 @@ import { CSSSettingsTab } from './settingsView/CSSSettingsTab';
 import { SettingType } from './settingsView/SettingComponents/types';
 import { SettingsView, viewType } from './settingsView/SettingsView';
 import detectIndent from 'detect-indent';
-import yaml from 'js-yaml';
+import { CORE_SCHEMA, load, mergeTag } from 'js-yaml';
 import { Command, Plugin } from 'obsidian';
+
+// js-yaml 5 dropped merge keys (`<<`) from its default schema; themes may rely on them.
+const settingsSchema = CORE_SCHEMA.withTags(mergeTag);
 
 export default class CSSSettingsPlugin extends Plugin {
 	settingsManager!: CSSSettingsManager;
@@ -248,10 +251,11 @@ export default class CSSSettingsPlugin extends Plugin {
 	): { parsed: ParsedCSSSettings; warnings: ValidationWarning[] } | undefined {
 		const indent = detectIndent(str);
 
-		const settings: ParsedCSSSettings = yaml.load(
+		const settings: ParsedCSSSettings = load(
 			str.replace(/\t/g, indent.type === 'space' ? indent.indent : '    '),
 			{
 				filename: name,
+				schema: settingsSchema,
 			}
 		) as ParsedCSSSettings;
 
