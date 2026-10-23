@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`style generation compatibility > alpha color and alternative formats 1`] = `
+{
+  "cssText": "body.css-settings-manager { --accent: #33669980; --accent-rgb: rgba(51,102,153,0.5); --accent-hsl: hsla(210,50%,40%,0.5); --accent-values: 51, 102, 153, 0.5; --accent-hsl-values: 210,49.99999999999999%,40%,0.5; --accent-split-r: 51; --accent-split-g: 102; --accent-split-b: 153; --accent-split-a: 0.5; --accent-hsl-split-h: 210; --accent-hsl-split-s: 49.99999999999999%; --accent-hsl-split-l: 40%; --accent-hsl-split-a: 0.5; --accent-decimal-h: 210; --accent-decimal-s: 0.49999999999999994; --accent-decimal-l: 0.4; --accent-decimal-a: 0.5; } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > empty settings 1`] = `
+{
+  "cssText": "body.css-settings-manager { } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > gradient endpoints from saved settings 1`] = `
+{
+  "cssText": "body.css-settings-manager { --start: #000000; --end: #ffffff; --shade-000: rgb(0,0,0); --shade-050: rgb(128,128,128); --shade-100: rgb(255,255,255); } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > gradient falls back to current theme variables 1`] = `
+{
+  "cssText": "body.css-settings-manager { --start: #000000; --shade-000: rgb(0,0,0); --shade-050: rgb(128,128,128); --shade-100: rgb(255,255,255); } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > independent light and dark colors 1`] = `
+{
+  "cssText": "body.css-settings-manager { } body.theme-light.css-settings-manager { --start-h: 210; --start-s: 49.99999999999999%; --start-l: 40%; --start-a: 0.5; } body.theme-dark.css-settings-manager { --start-h: 0; --start-s: 0%; --start-l: 50.19607843137255%; --start-a: 1; }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > invalid saved colors produce diagnostics without CSS 1`] = `
+{
+  "cssText": "body.css-settings-manager { } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [
+    "Style Settings: invalid saved color "banana" for --start; skipping.",
+    "Style Settings: could not parse color "#ZZZZZZ" for variable --end; skipping.",
+    "Style Settings: could not parse color "#ZZZZZZ" for variable --end; skipping.",
+    "Style Settings: invalid saved color "rgb(NaN, 0, 0)" for --tint; skipping.",
+  ],
+}
+`;
+
+exports[`style generation compatibility > missing gradient endpoint is omitted 1`] = `
+{
+  "cssText": "body.css-settings-manager { --start: #000000; } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > numbers text selects and ignored settings 1`] = `
+{
+  "cssText": "body.css-settings-manager { --spacing: 0px; --size: 1.5em; --font: 'Inter'; --empty: ; --layout: wide; } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > themed gradients use separate fallback endpoints 1`] = `
+{
+  "cssText": "body.css-settings-manager { } body.theme-light.css-settings-manager { --start: #000000; --shade-000: rgb(0,0,0); --shade-050: rgb(128,128,128); --shade-100: rgb(255,255,255); } body.theme-dark.css-settings-manager { --start: #ffffff; --shade-000: rgb(255,255,255); --shade-050: rgb(128,128,128); --shade-100: rgb(0,0,0); }",
+  "warnings": [],
+}
+`;
+
+exports[`style generation compatibility > unsaved defaults remain in the snippet 1`] = `
+{
+  "cssText": "body.css-settings-manager { } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "warnings": [],
+}
+`;
