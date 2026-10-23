@@ -31,6 +31,20 @@ See [Microsoft's compatibility guidance](https://devblogs.microsoft.com/typescri
 Run `pnpm dev` to rebuild when source files change. Reload the plugin in
 Obsidian to try the rebuilt files.
 
+## Style generation boundary
+
+`src/StyleGenerator.ts` converts saved settings, configuration and a snapshot of
+theme variables into CSS, base/light/dark variable lists and diagnostic messages.
+It does not read browser globals, access Obsidian, persist settings or log warnings.
+The original color conversion and CSS serialization behavior is covered by
+compatibility snapshots captured before extraction.
+
+`CSSSettingsManager` owns host operations: reading gradient endpoints from the
+theme, saving settings, applying CSS to the style element, logging diagnostics
+and notifying Obsidian. Shared data types live in `src/SettingsTypes.ts`; shared
+color validation lives in `src/ColorUtils.ts`. Existing manager and utility
+import paths re-export those helpers/types for compatibility.
+
 ## Browser regression tests
 
 Install Chromium once, then run the interaction tests:
