@@ -9,9 +9,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { DropdownComponent, Setting } from 'obsidian';
 
 export class VariableSelectSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	dropdownComponent: DropdownComponent;
-	setting: VariableSelect;
+	settingEl!: Setting;
+	dropdownComponent!: DropdownComponent;
+	setting!: VariableSelect;
 
 	render(): void {
 		if (!this.containerEl) return;

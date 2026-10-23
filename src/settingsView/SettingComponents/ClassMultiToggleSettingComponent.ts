@@ -9,9 +9,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { DropdownComponent, Setting } from 'obsidian';
 
 export class ClassMultiToggleSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	dropdownComponent: DropdownComponent;
-	setting: ClassMultiToggle;
+	settingEl!: Setting;
+	dropdownComponent!: DropdownComponent;
+	setting!: ClassMultiToggle;
 
 	render(): void {
 		if (!this.containerEl) return;

@@ -181,14 +181,14 @@ export function buildSettingComponentTree(opts: {
 }
 
 export class HeadingSettingComponent extends AbstractSettingComponent {
-	setting: Heading;
-	settingEl: Setting;
-	parent: HeadingSettingComponent;
+	setting!: Heading;
+	settingEl!: Setting;
+	parent!: HeadingSettingComponent;
 	children: AbstractSettingComponent[] = [];
 	filteredChildren: AbstractSettingComponent[] = [];
 	filterMode: boolean = false;
 	filterResultCount: number = 0;
-	resultsEl: HTMLElement;
+	resultsEl!: HTMLElement;
 
 	render(): void {
 		if (!this.containerEl) return;

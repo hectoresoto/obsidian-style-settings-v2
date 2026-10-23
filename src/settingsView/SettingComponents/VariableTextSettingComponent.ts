@@ -10,9 +10,9 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { debounce, Setting, TextComponent } from 'obsidian';
 
 export class VariableTextSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	textComponent: TextComponent;
-	setting: VariableText;
+	settingEl!: Setting;
+	textComponent!: TextComponent;
+	setting!: VariableText;
 
 	render(): void {
 		if (!this.containerEl) return;

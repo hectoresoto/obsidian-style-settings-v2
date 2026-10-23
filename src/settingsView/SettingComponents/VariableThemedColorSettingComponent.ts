@@ -13,10 +13,10 @@ import Pickr from '@simonwep/pickr';
 import { ButtonComponent, Setting } from 'obsidian';
 
 export class VariableThemedColorSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-	setting: VariableThemedColor;
-	pickrLight: Pickr | null;
-	pickrDark: Pickr | null;
+	settingEl!: Setting;
+	setting!: VariableThemedColor;
+	pickrLight!: Pickr | null;
+	pickrDark!: Pickr | null;
 
 	render(): void {
 		if (!this.containerEl) return;

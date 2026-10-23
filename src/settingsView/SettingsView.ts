@@ -7,7 +7,7 @@ import { ErrorList } from 'src/Utils';
 export const viewType = 'style-settings';
 
 export class SettingsView extends ItemView {
-	settingsMarkup: SettingsMarkup | null;
+	settingsMarkup!: SettingsMarkup | null;
 	plugin: CSSSettingsPlugin;
 
 	constructor(plugin: CSSSettingsPlugin, leaf: WorkspaceLeaf) {
@@ -19,8 +19,8 @@ export class SettingsView extends ItemView {
 		this.settingsMarkup?.rerender();
 	}
 
-	settings: ParsedCSSSettings[];
-	errorList: ErrorList;
+	settings!: ParsedCSSSettings[];
+	errorList!: ErrorList;
 	setSettings(settings: ParsedCSSSettings[], errorList: ErrorList) {
 		this.settings = settings;
 		this.errorList = errorList;

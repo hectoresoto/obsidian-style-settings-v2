@@ -15,7 +15,7 @@ export class SettingsMarkup extends Component {
 	settings: ParsedCSSSettings[] = [];
 	errorList: ErrorList = [];
 	containerEl: HTMLElement;
-	settingsContainerEl: HTMLElement;
+	settingsContainerEl!: HTMLElement;
 	isView: boolean;
 
 	constructor(
