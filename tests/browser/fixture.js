@@ -55,13 +55,36 @@ const plugin = {
 	getCSSVar: () => ({}),
 };
 const manager = (plugin.settingsManager = new CSSSettingsManager(plugin));
-const markup = new SettingsMarkup(
-	plugin.app,
-	plugin,
-	document.querySelector('#settings')
-);
-plugin.settingsTab = markup;
+
+// Obsidian opens settings in a popout window that shares this JS realm, so
+// `?popout` renders them in a same-origin iframe with its own document.
+async function settingsContainer() {
+	if (!new URLSearchParams(location.search).has('popout')) {
+		return document.querySelector('#settings');
+	}
+	const frame = document.body.createEl('iframe', { attr: { id: 'popout' } });
+	frame.style.cssText = 'width: 100%; height: 600px; border: 0';
+	const popout = frame.contentDocument;
+	popout.body.className = document.body.className;
+	const styles = [...document.querySelectorAll('style, link[rel=stylesheet]')];
+	await Promise.all(
+		styles.map((node) => {
+			const copy = popout.head.appendChild(node.cloneNode(true));
+			return node.tagName === 'LINK'
+				? new Promise((resolve) => copy.addEventListener('load', resolve))
+				: null;
+		})
+	);
+	return popout.body.appendChild(createDiv());
+}
+
 async function start() {
+	const markup = new SettingsMarkup(
+		plugin.app,
+		plugin,
+		await settingsContainer()
+	);
+	plugin.settingsTab = markup;
 	await manager.load();
 	manager.setConfig([section]);
 	manager.initClasses();
