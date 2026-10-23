@@ -54,6 +54,7 @@ export function getPickrSettings(opts: {
 		el,
 		container: isView ? document.body : containerEl,
 		theme: 'nano',
+		appClass: 'style-settings-color-picker',
 		swatches,
 		lockOpacity: !opacity,
 		default: defaultColor,

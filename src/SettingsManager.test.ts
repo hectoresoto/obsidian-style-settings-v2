@@ -28,9 +28,39 @@ vi.mock('./main', () => ({
 	default: class {},
 }));
 
-const { generateColorVariables, safeNum, safeRound } = await import(
-	'./SettingsManager'
-);
+const { CSSSettingsManager, generateColorVariables, safeNum, safeRound } =
+	await import('./SettingsManager');
+
+describe('section export selection', () => {
+	it('preserves false, zero, empty text and theme overrides without leaking other sections', () => {
+		const manager = Object.create(CSSSettingsManager.prototype) as InstanceType<
+			typeof CSSSettingsManager
+		>;
+		manager.settings = {
+			'ocean@@enabled': false,
+			'ocean@@spacing': 0,
+			'ocean@@label': '',
+			'ocean@@tint@@light': '#60A5FA80',
+			'ocean@@tint@@dark': '#93C5FD80',
+			'other@@enabled': true,
+		};
+		expect(
+			manager.getSettings('ocean', [
+				'enabled',
+				'spacing',
+				'label',
+				'tint',
+				'missing',
+			])
+		).toEqual({
+			'ocean@@enabled': false,
+			'ocean@@spacing': 0,
+			'ocean@@label': '',
+			'ocean@@tint@@light': '#60A5FA80',
+			'ocean@@tint@@dark': '#93C5FD80',
+		});
+	});
+});
 
 describe('safeRound', () => {
 	it('returns 0 for NaN', () => {
@@ -58,25 +88,35 @@ describe('safeNum', () => {
 
 describe('generateColorVariables', () => {
 	it('returns hex output for valid colors', () => {
-		expect(
-			generateColorVariables('test', 'hex', '#ff0000', false)
-		).toEqual([{ key: 'test', value: '#ff0000' }]);
+		expect(generateColorVariables('test', 'hex', '#ff0000', false)).toEqual([
+			{ key: 'test', value: '#ff0000' },
+		]);
 	});
 
 	it('returns empty array for unparseable colors', () => {
-		expect(
-			generateColorVariables('test', 'hex', 'notacolor', false)
-		).toEqual([]);
+		expect(generateColorVariables('test', 'hex', 'notacolor', false)).toEqual(
+			[]
+		);
 	});
 
 	it('rounds rgb-values output to integers', () => {
-		const result = generateColorVariables('test', 'rgb-values', '#336699', false);
+		const result = generateColorVariables(
+			'test',
+			'rgb-values',
+			'#336699',
+			false
+		);
 		expect(result).toHaveLength(1);
 		expect(result[0].value).toMatch(/^\d+, \d+, \d+$/);
 	});
 
 	it('rounds rgb-split output to integers', () => {
-		const result = generateColorVariables('test', 'rgb-split', '#336699', false);
+		const result = generateColorVariables(
+			'test',
+			'rgb-split',
+			'#336699',
+			false
+		);
 		const values = Object.fromEntries(
 			result.map((entry) => [entry.key, entry.value])
 		);
@@ -86,7 +126,12 @@ describe('generateColorVariables', () => {
 	});
 
 	it('does not emit NaN in hsl-values output', () => {
-		const result = generateColorVariables('test', 'hsl-values', '#ff0000', false);
+		const result = generateColorVariables(
+			'test',
+			'hsl-values',
+			'#ff0000',
+			false
+		);
 		expect(result).toHaveLength(1);
 		expect(result[0].value).not.toMatch(/NaN/i);
 	});

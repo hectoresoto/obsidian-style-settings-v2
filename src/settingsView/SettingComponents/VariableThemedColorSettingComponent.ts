@@ -1,4 +1,6 @@
 import { resetTooltip, VariableThemedColor } from '../../SettingHandlers';
+import { bindExclusiveColorPicker } from '../../ExclusiveColorPicker';
+import { bindColorPickerInput } from '../../ColorPickerInput';
 import {
 	getDescription,
 	getPickrSettings,
@@ -119,6 +121,8 @@ export class VariableThemedColorSettingComponent extends AbstractSettingComponen
 	}
 
 	destroy(): void {
+		this.pickrLight?.hide();
+		this.pickrDark?.hide();
 		this.pickrLight?.destroyAndRemove();
 		this.pickrDark?.destroyAndRemove();
 		this.pickrLight = null;
@@ -153,6 +157,8 @@ export class VariableThemedColorSettingComponent extends AbstractSettingComponen
 			})
 		));
 
+		bindExclusiveColorPicker(pickrLight, containerEl.ownerDocument);
+		bindColorPickerInput(pickrLight);
 		pickrLight.on('show', () => {
 			const { result } = (pickrLight.getRoot() as any).interaction;
 			activeWindow.requestAnimationFrame(() =>
@@ -206,6 +212,8 @@ export class VariableThemedColorSettingComponent extends AbstractSettingComponen
 			})
 		));
 
+		bindExclusiveColorPicker(pickrDark, containerEl.ownerDocument);
+		bindColorPickerInput(pickrDark);
 		pickrDark.on('show', () => {
 			const { result } = (pickrDark.getRoot() as any).interaction;
 			activeWindow.requestAnimationFrame(() =>

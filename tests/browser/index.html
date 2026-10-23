@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+	<meta charset="utf-8" />
+	<title>Style Settings browser tests</title>
+	<link rel="stylesheet" href="/fixture.css" />
+	<style>
+		body {
+			margin: 16px;
+			font: 14px system-ui;
+			color: var(--text-normal);
+			background: var(--background-primary);
+			--text-normal: #ddd;
+			--text-muted: #aaa;
+			--text-faint: #999;
+			--background-primary: #1e1e1e;
+			--background-secondary: #262626;
+			--background-modifier-border: #444;
+			--background-modifier-form-field: #303030;
+			--interactive-hover: #444;
+			--interactive-accent: #7852ee;
+			--interactive-accent-hover: #8c69ff;
+			--text-on-accent: #fff;
+			--font-interface: system-ui;
+			--font-monospace: monospace;
+			--shadow-l: 0 8px 32px #0005;
+			--font-ui-small: 14px;
+			--ocean-h1: #3b82f6;
+		}
+		body.theme-light {
+			--text-normal: #222;
+			--text-muted: #666;
+			--background-primary: #fff;
+			--background-modifier-border: #ddd;
+			--background-modifier-form-field: #f5f5f5;
+		}
+		.setting-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+			padding: 8px 0;
+		}
+		.setting-item-control {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+		.setting-item-description {
+			font-size: 11px;
+			color: var(--text-muted);
+		}
+		.modal {
+			position: fixed;
+			inset: 12px;
+			z-index: 20000;
+			padding: 12px;
+			background: var(--background-primary);
+		}
+		.modal textarea {
+			box-sizing: border-box;
+			width: 100%;
+			height: 140px;
+		}
+		h1 {
+			color: var(--ocean-h1);
+		}
+	</style>
+	<body class="css-settings-manager theme-dark">
+		<h1>Sample heading</h1>
+		<div id="settings"></div>
+		<script type="module" src="/fixture.js"></script>
+	</body>
+</html>

@@ -575,14 +575,14 @@ export class CSSSettingsManager {
 			const fullId = `${sectionId}@@${id}`;
 			const alts = ['dark', 'light'];
 
-			if (this.settings[fullId]) {
+			if (this.settings[fullId] !== undefined) {
 				settings[fullId] = this.settings[fullId];
 			}
 
 			alts.forEach((alt) => {
 				const id = `${fullId}@@${alt}`;
 
-				if (this.settings[id]) {
+				if (this.settings[id] !== undefined) {
 					settings[id] = this.settings[id];
 				}
 			});
