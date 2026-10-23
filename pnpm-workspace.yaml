@@ -1,2 +1,4 @@
 onlyBuiltDependencies:
   - esbuild
+patchedDependencies:
+  '@simonwep/pickr@1.8.4': patches/@simonwep__pickr@1.8.4.patch

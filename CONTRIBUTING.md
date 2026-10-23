@@ -95,3 +95,18 @@ merging requires a separate repository ruleset or branch protection setting.
 
 Commit `pnpm-lock.yaml` when changing dependencies. Use pnpm for dependency
 changes so the project keeps a single lockfile.
+
+## Patched dependencies
+
+`patches/@simonwep__pickr@1.8.4.patch` changes the bundled
+`dist/pickr.min.js` so Pickr's sliders and palette track the mouse and arrow
+keys, and the picker closes on Escape or an outside click, on the document that
+owns the picker. Obsidian opens settings in popout
+windows that share the main window's JavaScript, so listeners on the global
+`document` never receive events from those windows. pnpm applies the patch on
+install (see `patchedDependencies` in `pnpm-workspace.yaml`).
+
+`pnpm patch` does not support Pickr's tarball dependency, so edit the patch
+by hand. If Pickr's version or tarball changes, regenerate the patch or remove
+it, and run the browser tests: `?popout` renders the settings in a
+same-origin iframe to reproduce the popout window.

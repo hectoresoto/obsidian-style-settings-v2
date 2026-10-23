@@ -1,0 +1,2 @@
+# Patches must keep LF endings to apply to the LF files they target.
+*.patch -text

@@ -287,3 +287,71 @@ test('picker follows light/dark theme and fits a narrow window', async ({
 		await picker(page).evaluate((el) => el.scrollWidth <= el.clientWidth)
 	).toBe(true);
 });
+
+// Obsidian renders settings in popout windows; Pickr must track the mouse and
+// keyboard in the document that owns the picker, not the main document.
+for (const popout of [false, true]) {
+	const where = popout ? 'in a popout window' : 'in the main window';
+	async function openIn(page) {
+		if (popout) await page.goto('/?popout');
+		const root = popout ? page.frameLocator('#popout') : page;
+		await openPicker(root);
+		return root;
+	}
+
+	for (const [name, control] of [
+		['hue slider', '.pcr-color-chooser'],
+		['palette', '.pcr-color-palette'],
+	]) {
+		test(`dragging the ${name} follows the mouse ${where}`, async ({
+			page,
+		}) => {
+			const root = await openIn(page);
+			const result = picker(root).locator('.pcr-result');
+			const area = picker(root).locator(
+				`${control} .pcr-slider, ${control} .pcr-palette`
+			);
+			const box = await area.boundingBox();
+			const y = box.y + box.height / 2;
+			await page.mouse.move(box.x + box.width * 0.1, y);
+			await page.mouse.down();
+			const afterPress = await result.inputValue();
+			await page.mouse.move(box.x + box.width * 0.9, y, { steps: 10 });
+			// The knob must follow while the button is still held.
+			const knob = await picker(root)
+				.locator(`${control} .pcr-picker`)
+				.boundingBox();
+			expect(knob.x + knob.width / 2).toBeGreaterThan(box.x + box.width * 0.8);
+			await expect(result).not.toHaveValue(afterPress);
+			await page.mouse.up();
+			await expect(picker(root)).toHaveCount(1);
+		});
+	}
+
+	test(`arrow keys move the focused hue slider ${where}`, async ({ page }) => {
+		const root = await openIn(page);
+		const result = picker(root).locator('.pcr-result');
+		const before = await result.inputValue();
+		await picker(root).locator('.pcr-color-chooser .pcr-slider').focus();
+		await page.keyboard.press('ArrowRight', { delay: 10 });
+		await page.keyboard.press('ArrowRight', { delay: 10 });
+		await expect(result).not.toHaveValue(before);
+	});
+
+	test(`clicking outside closes the picker ${where}`, async ({ page }) => {
+		const root = await openIn(page);
+		await row(root, 'ocean-h2').getByText('Heading H2').click();
+		await expect(picker(root)).toHaveCount(0);
+		expect(await stored(page)).toEqual({});
+	});
+
+	test(`Escape closes the picker from its sliders ${where}`, async ({
+		page,
+	}) => {
+		const root = await openIn(page);
+		await picker(root).locator('.pcr-color-chooser .pcr-slider').focus();
+		await page.keyboard.press('Escape');
+		await expect(picker(root)).toHaveCount(0);
+		expect(await stored(page)).toEqual({});
+	});
+}
