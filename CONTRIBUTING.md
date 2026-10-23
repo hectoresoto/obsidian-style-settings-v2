@@ -15,10 +15,18 @@ pnpm lint
 pnpm build
 ```
 
-The existing ESLint 8 / typescript-eslint 5 setup currently fails to load with
-TypeScript 7 (`Cannot read properties of undefined (reading 'Undefined')`).
-Tests, type checking, and builds can still run; the lint toolchain needs a
-separate compatibility update.
+ESLint uses `eslint.config.mjs` (flat config) and checks all TypeScript/TSX sources
+under `src/`. `pnpm lint:fix` checks the same files and applies available fixes.
+Both commands fail on errors or warnings. Formatting is handled by Prettier.
+
+TypeScript 7.0 does not expose the legacy compiler API needed by typescript-eslint.
+Following Microsoft's side-by-side setup, `typescript` aliases the official
+`@typescript/typescript6` compatibility package, while `@typescript/native` aliases
+TypeScript 7.0.2 and supplies `tsc`. Thus `pnpm typecheck` and `pnpm build` still
+use TypeScript 7; ESLint uses the supported TypeScript 6 API without forced peers
+or suppressed compatibility warnings. `pnpm exec tsc --version` verifies the compiler.
+
+See [Microsoft's compatibility guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6.0).
 
 Run `pnpm dev` to rebuild when source files change. Reload the plugin in
 Obsidian to try the rebuilt files.
@@ -58,7 +66,7 @@ manual runs once the workflow is on the default branch. It uses a standard
 Ubuntu 24.04 runner, Node.js 26 and the pnpm version declared in `package.json`.
 
 The `Tests, types and build` check installs the frozen lockfile, runs unit tests,
-checks types, builds the plugin, installs Chromium with its system dependencies,
+lints sources, checks types, builds the plugin, installs Chromium with its system dependencies,
 and runs the browser regressions. Browser failures are annotated in GitHub.
 Open the repository's **Actions** tab or a pull request's **Checks** tab to view
 the results and individual step logs.
@@ -68,8 +76,7 @@ Each job has a 15-minute limit. The workflow has read-only repository access
 and does not upload artifacts or enable dependency caching. Standard hosted
 runner execution is free for public repositories.
 
-Lint is not part of CI yet because of the ESLint/TypeScript incompatibility
-described above. These checks report failures; making them mandatory before
+These checks report failures; making them mandatory before
 merging requires a separate repository ruleset or branch protection setting.
 
 Commit `pnpm-lock.yaml` when changing dependencies. Use pnpm for dependency
