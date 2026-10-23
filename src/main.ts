@@ -12,12 +12,12 @@ import {
 	validateAndNormalizeSetting,
 	ValidationWarning,
 } from './SettingsValidation';
+import '@simonwep/pickr/dist/themes/nano.min.css';
 import './css/pickerOverrides.css';
 import './css/settings.css';
 import { CSSSettingsTab } from './settingsView/CSSSettingsTab';
 import { SettingType } from './settingsView/SettingComponents/types';
 import { SettingsView, viewType } from './settingsView/SettingsView';
-import '@simonwep/pickr/dist/themes/nano.min.css';
 import detectIndent from 'detect-indent';
 import yaml from 'js-yaml';
 import { Command, Plugin } from 'obsidian';

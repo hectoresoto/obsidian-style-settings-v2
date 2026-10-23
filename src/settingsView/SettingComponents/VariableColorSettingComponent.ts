@@ -1,4 +1,6 @@
 import { resetTooltip, VariableColor } from '../../SettingHandlers';
+import { bindExclusiveColorPicker } from '../../ExclusiveColorPicker';
+import { bindColorPickerInput } from '../../ColorPickerInput';
 import {
 	createDescription,
 	getDescription,
@@ -83,6 +85,8 @@ export class VariableColorSettingComponent extends AbstractSettingComponent {
 			})
 		));
 
+		bindExclusiveColorPicker(pickr, this.containerEl.ownerDocument);
+		bindColorPickerInput(pickr);
 		pickr.on('save', (color: Pickr.HSVaColor, instance: Pickr) => {
 			if (!color) return;
 			const hex = color.toHEXA().toString();
@@ -129,6 +133,7 @@ export class VariableColorSettingComponent extends AbstractSettingComponent {
 	}
 
 	destroy(): void {
+		this.pickr?.hide();
 		this.pickr?.destroyAndRemove();
 		this.pickr = null;
 		this.settingEl?.settingEl.remove();

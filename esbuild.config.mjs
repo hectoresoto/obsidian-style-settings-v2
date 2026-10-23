@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import { copyFile } from "node:fs/promises";
 
 const banner =
 `/*
@@ -17,6 +18,16 @@ const context = await esbuild.context({
 	},
 	entryPoints: ["src/main.ts"],
 	bundle: true,
+	plugins: [{
+		name: "obsidian-styles",
+		setup(build) {
+			build.onEnd(async (result) => {
+				if (result.errors.length === 0) {
+					await copyFile("main.css", "styles.css");
+				}
+			});
+		},
+	}],
 	external: [
 		"obsidian",
 		"electron",
