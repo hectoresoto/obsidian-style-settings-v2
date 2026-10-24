@@ -46,7 +46,7 @@ patches/             Fixes applied to dependencies on install
 
 Unit tests (`*.test.ts`) live next to the file they test.
 
-The project root only keeps files that Obsidian or the tools look for there: `main.js`, `styles.css`, `manifest.json` and `versions.json` for Obsidian, plus `package.json`, the pnpm files, `tsconfig.json` and `eslint.config.mjs`.
+The project root only keeps files that Obsidian or the tools look for there: `manifest.json` and `versions.json` for Obsidian, plus `package.json`, the pnpm files, `tsconfig.json` and `eslint.config.mjs`. `pnpm build` and `pnpm dev` write `main.js` and `styles.css` to the root, where Obsidian loads them; both are generated from `src/` and ignored by git. Releases attach freshly built copies.
 
 ## Style generation boundary
 
