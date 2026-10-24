@@ -267,11 +267,11 @@ describe('gradient endpoints are limited to their own section', () => {
 		});
 		expect(variables.base).toContainEqual({
 			key: 'shade-000',
-			value: 'rgb(0,0,0)',
+			value: '#000000',
 		});
 		expect(variables.base).toContainEqual({
 			key: 'shade-100',
-			value: 'rgb(255,255,255)',
+			value: '#ffffff',
 		});
 	});
 
@@ -284,7 +284,40 @@ describe('gradient endpoints are limited to their own section', () => {
 		});
 		expect(variables.base).toContainEqual({
 			key: 'shade-100',
-			value: 'rgb(255,255,255)',
+			value: '#ffffff',
 		});
+	});
+});
+
+describe('gradient steps use the gradient format', () => {
+	function steps(format: ColorGradient['format'], from: string) {
+		return generateStyles({
+			settings: { 'ocean@@start': from, 'ocean@@end': '#ffffff' },
+			config: config(start, end),
+			gradients: { ocean: [{ ...gradient, format }] },
+		}).variables.base.filter((kv) => kv.key.startsWith('shade-'));
+	}
+
+	it('AC-29: hex gradients emit hex values', () => {
+		expect(steps('hex', '#000000')).toEqual([
+			{ key: 'shade-000', value: '#000000' },
+			{ key: 'shade-050', value: '#808080' },
+			{ key: 'shade-100', value: '#ffffff' },
+		]);
+	});
+
+	it('AC-29: hex gradients keep transparency as #rrggbbaa', () => {
+		expect(steps('hex', '#00000000')).toContainEqual({
+			key: 'shade-050',
+			value: '#80808080',
+		});
+	});
+
+	it('AC-29: rgb and hsl gradients keep their formats', () => {
+		expect(steps('rgb', '#000000')).toContainEqual({
+			key: 'shade-050',
+			value: 'rgb(128,128,128)',
+		});
+		expect(steps('hsl', '#000000')[1].value).toMatch(/^hsl\(/);
 	});
 });

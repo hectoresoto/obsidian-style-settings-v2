@@ -89,6 +89,7 @@ Color formats: `hex`, `rgb`, `rgb-values`, `rgb-split`, `hsl`, `hsl-values`, `hs
 - **AC-23:** Given a saved color that does not start with `#`, `rgb` or `hsl`, or that contains `NaN`, when styles are generated, then no variable is emitted for it and a diagnostic is logged to the console.
 - **AC-24:** Given a `color-gradient`, when styles are generated, then the gradient is emitted if `from` is the id of a saved `variable-color` or `variable-themed-color` in the gradient's own section id. The `to` color is a saved color with that id in the same section id, or else the theme's current value of `--<to>`. Base, light and dark gradients are resolved separately from base, light and dark saved colors. If `from` or `to` cannot be resolved, that gradient is omitted. Saved colors of other section ids are never used, even when their setting id matches.
 - **AC-25:** Given gradient generation, when `pad` is set, then the step number is left-padded with zeros to `pad` digits (`--id-005`).
+- **AC-29:** Given a `color-gradient`, when its steps are emitted, then each step uses the gradient's `format`: `hex` as `#rrggbb` (`#rrggbbaa` when the step is not fully opaque), `rgb` as `rgb(…)` or `rgba(…)`, and `hsl` as `hsl(…)` or `hsla(…)`.
 
 ### Labels and duplicate ids
 
@@ -122,6 +123,7 @@ The open questions of the baseline were resolved as follows:
 - **Error labels (AC-7, AC-26):** labeling every error with the first `name:` of the stylesheet was a bug. Errors and warnings now name the block they come from.
 - **Duplicate section ids (AC-27, AC-28):** the second block used to replace the first in the stored configuration, so the first block's saved values were pruned and its controls had no effect. Blocks that share an id are now merged, which also lets authors split a long section into several blocks. Only a real conflict, the same setting id twice under one section id, warns.
 - **Gradient lookup (AC-24):** matching gradient endpoints across sections only worked by accident (the gradient's own section also needed a saved color) and let unrelated sections feed each other. Lookup is now limited to the gradient's own section id, as the author guide said. Cross-section gradients stop working; the theme fallback for `to` is unchanged.
+- **Gradient `hex` format (AC-29):** gradients with `format: hex` used to emit `rgb(…)` values, because the `hex` output passes the color through unchanged and the step colors were rgb strings. They now emit hex, as the author guide says. Themes that use these variables as colors are unaffected; only code that parsed the `rgb(…)` text would notice.
 - **Heading level 0:** reserved for the implicit section heading. Validation keeps turning a `level: 0` in a block into 1; the TypeScript type for user headings now excludes 0.
 
 ## Test plan
@@ -141,6 +143,7 @@ The open questions of the baseline were resolved as follows:
 | AC-22 | **Gap** |
 | AC-23 | `src/settings/StyleGenerator.test.ts` – "invalid saved colors produce diagnostics without CSS"; `src/settings/SettingsManager.test.ts` – "reports invalid values through the host…"; `tests/browser/settings.spec.mjs` – "invalid input … cannot corrupt a saved color" |
 | AC-24, AC-25 | `src/settings/StyleGenerator.test.ts` – gradient fixtures and "gradient endpoints are limited to their own section" |
+| AC-29 | `src/settings/StyleGenerator.test.ts` – "gradient steps use the gradient format" |
 | AC-27 | `src/settings/SettingsManager.test.ts` – "blocks sharing a section id" |
 
 ## Known discrepancies
