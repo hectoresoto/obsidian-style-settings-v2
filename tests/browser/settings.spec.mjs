@@ -10,6 +10,9 @@ async function openPicker(page, id = 'ocean-h1', index = 0) {
 	await row(page, id).locator('.pcr-button').nth(index).click();
 	await expect(picker(page)).toHaveCount(1);
 	await expect(picker(page).locator('.pcr-result')).not.toHaveValue('');
+	// The picker focuses its text field two frames after opening. Wait for it, or
+	// that late focus can take keys and text meant for whatever the test focuses next.
+	await expect(picker(page).locator('.pcr-result')).toBeFocused();
 }
 
 async function saveColor(page, color) {
