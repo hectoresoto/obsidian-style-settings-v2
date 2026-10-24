@@ -1,29 +1,22 @@
-import { ClassToggle, CSSSetting, ParsedCSSSettings } from './settings/SettingHandlers';
+import { ClassToggle, ParsedCSSSettings } from './settings/SettingHandlers';
 import { CSSSettingsManager } from './settings/SettingsManager';
 import {
 	ErrorList,
 	getDescription,
 	getTitle,
-	nameRegExp,
-	settingRegExp,
 	SettingsSeachResource,
 } from './Utils';
 import {
-	validateAndNormalizeSetting,
-	ValidationWarning,
-} from './settings/SettingsValidation';
+	findDuplicateSettingIds,
+	parseStyleSheetText,
+} from './settings/StyleSheetParser';
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import './css/pickerOverrides.css';
 import './css/settings.css';
 import { CSSSettingsTab } from './settingsView/CSSSettingsTab';
 import { SettingType } from './settings/SettingType';
 import { SettingsView, viewType } from './settingsView/SettingsView';
-import detectIndent from 'detect-indent';
-import { CORE_SCHEMA, load, mergeTag } from 'js-yaml';
 import { Command, Plugin } from 'obsidian';
-
-// js-yaml 5 dropped merge keys (`<<`) from its default schema; themes may rely on them.
-const settingsSchema = CORE_SCHEMA.withTags(mergeTag);
 
 export default class CSSSettingsPlugin extends Plugin {
 	settingsManager!: CSSSettingsManager;
@@ -121,6 +114,8 @@ export default class CSSSettingsPlugin extends Plugin {
 				this.parseCSSStyleSheet(sheet);
 			}
 
+			this.errorList.push(...findDuplicateSettingIds(this.settingsList));
+
 			// compatability with Settings Search Plugin
 			this.registerSettingsToSettingsSearch();
 
@@ -201,79 +196,9 @@ export default class CSSSettingsPlugin extends Plugin {
 		const text = sheet?.ownerNode?.textContent?.trim();
 		if (!text) return;
 
-		let match = settingRegExp.exec(text);
-
-		if (match?.length) {
-			do {
-				const nameMatch = text.match(nameRegExp);
-				if (!nameMatch) continue;
-
-				const name = nameMatch[1];
-
-				try {
-					const str = match[1].trim();
-				const result = this.parseCSSSettings(str, name);
-
-				if (result && result.parsed) {
-					const { parsed, warnings } = result;
-					if (
-						parsed.name &&
-						parsed.id &&
-						parsed.settings &&
-						parsed.settings.length
-					) {
-						this.settingsList.push(parsed);
-						for (const warning of warnings) {
-							this.errorList.push({
-								name,
-								error: `[${warning.code}] ${warning.message}`,
-							});
-						}
-					}
-				}
-			} catch (e) {
-				this.errorList.push({ name, error: `${e}` });
-			}
-			} while ((match = settingRegExp.exec(text)) !== null);
-		}
-	}
-
-	/**
-	 * Parse css settings from a string.
-	 *
-	 * @param str the stringified settings to parse
-	 * @param name the name of the file
-	 * @private
-	 */
-	private parseCSSSettings(
-		str: string,
-		name: string
-	): { parsed: ParsedCSSSettings; warnings: ValidationWarning[] } | undefined {
-		const indent = detectIndent(str);
-
-		const settings: ParsedCSSSettings = load(
-			str.replace(/\t/g, indent.type === 'space' ? indent.indent : '    '),
-			{
-				filename: name,
-				schema: settingsSchema,
-			}
-		) as ParsedCSSSettings;
-
-		if (!settings.settings) return undefined;
-
-		settings.settings = settings.settings.filter((setting) => setting);
-
-		const validatedSettings: CSSSetting[] = [];
-		const warnings: ValidationWarning[] = [];
-
-		for (const setting of settings.settings) {
-			const result = validateAndNormalizeSetting(setting);
-			validatedSettings.push(result.setting);
-			warnings.push(...result.warnings);
-		}
-
-		settings.settings = validatedSettings;
-		return { parsed: settings, warnings };
+		const { sections, errors } = parseStyleSheetText(text);
+		this.settingsList.push(...sections);
+		this.errorList.push(...errors);
 	}
 
 	private registerSettingCommands(): void {

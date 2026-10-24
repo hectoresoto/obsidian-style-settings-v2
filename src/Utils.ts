@@ -2,8 +2,6 @@ import { Meta, WithDescription, WithTitle } from './settings/SettingHandlers';
 import { lang, t } from './lang/helpers';
 import Pickr from '@simonwep/pickr';
 
-export const settingRegExp = /\/\*!?\s*@settings[\r\n]+?([\s\S]+?)\*\//g;
-export const nameRegExp = /^name:\s*(.+)$/m;
 export type ErrorList = Array<{ name: string; error: string }>;
 
 export function getTitle<T extends Meta>(config: T): string {
