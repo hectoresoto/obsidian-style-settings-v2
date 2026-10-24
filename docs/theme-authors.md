@@ -41,7 +41,7 @@ will result in:
 
 <img src="screenshots/example01.png" alt="Example output of plugin" />
 
-Each setting definition must be separated by a dash (`-`). There are 7 setting types.
+Each setting definition must be separated by a dash (`-`). There are 11 setting types.
 
 A long section can be split into several `@settings` comments that use the same `id`. Each comment is shown under its own `name`, but the settings are stored together, and resetting one of them resets all settings under that `id`.
 
@@ -52,6 +52,7 @@ All settings definitions must have these parameters:
 - `description` (optional): a description of the setting
 - `type`: The type of setting. Can be one of:
   - `heading`: a heading element for organizing settings
+  - `info-text`: a block of informational text, with no control
   - `class-toggle`: a switch to toggle classes on the `body` element
   - `class-select`: a dropdown menu of predefined options to add classes on the `body` element
   - `variable-text`: a text-based CSS variable
@@ -59,7 +60,24 @@ All settings definitions must have these parameters:
   - `variable-number-slider`: a numeric CSS variable represented by a slider
   - `variable-select`: a text-based CSS variable displayed as a dropdown menu of predefined options
   - `variable-color`: a color CSS variable with corresponding color picker
+  - `variable-themed-color`: a color CSS variable with separate color pickers for light and dark mode
+  - `color-gradient`: a series of color CSS variables between two colors, with no control of its own
 
+## Defaults and output
+
+Style Settings only writes a CSS variable once the user has changed that setting. Until then nothing is output for it: the `default` you give is what the control shows and what the reset button returns to, but it does not reach your CSS. Define the default value of every variable in your own theme or snippet, for example:
+
+```css
+body {
+    --line-width: 42rem;
+}
+```
+
+Changed values are written to a `<style id="css-settings-manager">` element with three rules: `body.css-settings-manager` for most settings, and `body.theme-light.css-settings-manager` and `body.theme-dark.css-settings-manager` for the light and dark colors of `variable-themed-color`. These selectors are more specific than `body`, `.theme-light` or `.theme-dark`, so the user's values win over defaults you set there.
+
+Classes work differently: for `class-toggle` and `class-select`, Style Settings adds the default class to `body` itself until the user picks something else.
+
+The output examples below show what is written after the user has changed the setting to the value shown.
 
 ## `heading`
 
@@ -122,10 +140,11 @@ settings:
 
 ## `class-select`
 
-`class-select` creates a dropdown of predefined options for a CSS variable. The `id` of the setting will be used as the variable name.
+`class-select` creates a dropdown of predefined options. The value of the selected option is added as a class on the `body` element, and the classes of the other options are removed. It does not set a CSS variable, and the `id` of the setting is not used as a class name.
 
-- When `allowEmpty` is `false`, a `default` option **must** be specified.
-- When `allowEmpty` is `true`, the `default` attribute is optional, and may be set to `none`.
+- `allowEmpty` controls whether the dropdown has an empty choice. When it is `true`, the empty choice adds no class. If you leave `allowEmpty` out, it is treated as `false` and Style Settings shows a `MISSING_ALLOW_EMPTY` warning.
+- `default` is optional. It is the option whose class is added until the user picks another one. Without a `default`, no class is added until the user picks an option, even when `allowEmpty` is `false`, so set a `default` if your CSS expects one of the classes to be present. When `allowEmpty` is `true`, `default` may be set to `none` to start with the empty choice.
+- A `default` that is not one of the options shows an `INVALID_DEFAULT` warning.
 
 ```css
 /* @settings
@@ -173,6 +192,8 @@ settings:
 */
 ```
 
+With either example, `body` gets the class `my-class` until the user picks another option. When the user picks `my-other-class`, `my-class` is removed and `my-other-class` is added.
+
 ## `variable-text`
 
 `variable-text` represents any text based CSS value. The `id` of the setting will be used as the variable name. The output will be wrapped in quotes if `quotes` is set to true. `variable-text` settings require a `default` attribute.
@@ -193,10 +214,10 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user changes the font to `Inter, sans-serif`, Style Settings outputs:
 
 ```
---text: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+--text: Inter, sans-serif;
 ```
 
 Using `quotes`:
@@ -217,10 +238,10 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user changes the icon to `→`, Style Settings outputs:
 
 ```
---icon: '•'
+--icon: '→';
 ```
 
 ## `variable-number`
@@ -244,10 +265,10 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user changes the width to `50`, Style Settings outputs:
 
 ```
---line-width: 42rem;
+--line-width: 50rem;
 ```
 
 ## `variable-number-slider`
@@ -279,10 +300,10 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user moves the slider to `50`, Style Settings outputs:
 
 ```
---line-width: 42;
+--line-width: 50;
 ```
 
 ## `variable-select`
@@ -334,17 +355,18 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user picks `Helvetica Neue`, Style Settings outputs:
 
 ```
---text: Roboto;
+--text: Helvetica Neue;
 ```
 
 ## `variable-color`
 
-`variable-color` creates a color picker with a variety of output format options. A `default` attribute is required in `hex` or `rgb` format. **Note: hex color values must be wrapped in quotes.** A `format` attribute is also required. 
+`variable-color` creates a color picker with a variety of output format options. A `format` attribute is required; if it is missing or not one of the [formatting options](#variable-color-formatting-options), `hex` is used and Style Settings shows a warning.
 
 Optional parameters:
+-  `default`: the color the picker starts with and returns to on reset, in hex (`'#007AFF'`), rgb (`rgb(0, 122, 255)`) or hsl (`hsl(211, 100%, 50%)`) notation. **Note: hex color values must be wrapped in quotes**, because YAML treats `#` as the start of a comment. If you leave `default` out, the picker starts with your theme's current value of the `--id` variable; if that is not a color either, the setting is not shown.
 -  Setting `opacity` to `true` will enable opacity support in all output formats.
 -  A list of alternate output formats can be supplied via the `alt-format` setting
 
@@ -369,16 +391,16 @@ settings:
 */
 ```
 
-This will output the variable:
+When the user picks `#FF5733`, Style Settings outputs:
 
 ```
---accent: #007AFF;
---accent-rgb: rgb(0, 123, 255);
+--accent: #FF5733;
+--accent-rgb: rgb(255, 87, 51);
 ```
 
 ## `variable-themed-color`
 
-`variable-themed-color` is identical to `variable-color` except that it generates two color pickers for a light and dark variant.
+`variable-themed-color` is identical to `variable-color` except that it generates two color pickers for a light and dark variant. Instead of `default` it takes `default-light` and `default-dark`; if one is missing, `#000000` is used and Style Settings shows a warning.
 
 ```css
 /* @settings
@@ -398,16 +420,18 @@ settings:
 */
 ```
 
-This will output the variables:
+When the user changes only the light color to `#FF5733`, Style Settings outputs:
 
 ```
-body.theme-light.css-settings-manager { --accent: #007AFF; } 
-body.theme-dark.css-settings-manager { --accent: #2DB253; }
+body.theme-light.css-settings-manager { --accent: #FF5733; }
+body.theme-dark.css-settings-manager { }
 ```
+
+In dark mode your theme's own value of `--accent` keeps applying until the user changes the dark color too.
 
 ### `variable-color` formatting options
 
-There are 8 formatting options:
+There are 8 formatting options. Each example shows the output after the user picks `#007AFF`.
 
 - `hex`
 
