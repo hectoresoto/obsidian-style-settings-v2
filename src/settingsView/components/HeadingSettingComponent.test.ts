@@ -147,6 +147,46 @@ describe('buildSettingComponentTree (AC-11)', () => {
 		});
 	});
 
+	it('makes a heading after a skipped level a sibling of the heading it reaches', () => {
+		expect(
+			build([
+				heading('a', 1),
+				heading('a3', 3),
+				toggle('deep'),
+				heading('b2', 2),
+				toggle('after'),
+			])
+		).toEqual({
+			id: 'section',
+			children: [
+				{ id: 'a', children: [{ id: 'a3', children: [{ id: 'deep' }] }] },
+				{ id: 'b2', children: [{ id: 'after' }] },
+			],
+		});
+	});
+
+	it('stops at the first containing heading with a lower or equal level', () => {
+		expect(
+			build([
+				heading('a', 1),
+				heading('a2', 2),
+				heading('a4', 4),
+				heading('b3', 3),
+			])
+		).toEqual({
+			id: 'section',
+			children: [
+				{
+					id: 'a',
+					children: [
+						{ id: 'a2', children: [{ id: 'a4', children: [] }] },
+						{ id: 'b3', children: [] },
+					],
+				},
+			],
+		});
+	});
+
 	it('places a first heading deeper than level 1 under the section heading', () => {
 		expect(build([heading('h2', 2), heading('h1', 1)])).toEqual({
 			id: 'section',
