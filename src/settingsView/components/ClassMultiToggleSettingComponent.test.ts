@@ -85,7 +85,7 @@ const { ClassMultiToggleSettingComponent } = await import(
 	'./ClassMultiToggleSettingComponent'
 );
 
-function render(setting: Partial<ClassMultiToggle>, saved?: string) {
+function renderSetting(setting: Partial<ClassMultiToggle>, saved?: string) {
 	dropdowns.length = 0;
 	const settingsManager = {
 		getSetting: vi.fn(() => saved),
@@ -108,6 +108,11 @@ function render(setting: Partial<ClassMultiToggle>, saved?: string) {
 		false
 	);
 	component.render();
+	return settingsManager;
+}
+
+function render(setting: Partial<ClassMultiToggle>, saved?: string) {
+	const settingsManager = renderSetting(setting, saved);
 	expect(dropdowns).toHaveLength(1);
 	return { dropdown: dropdowns[0], settingsManager };
 }
@@ -148,4 +153,19 @@ describe('class-select dropdown (AC-13)', () => {
 		const { dropdown } = render({ allowEmpty: true }, 'none');
 		expect(dropdown.value).toBe('none');
 	});
+});
+
+describe('class-select without a default (AC-30)', () => {
+	it.each([true, false])(
+		'shows no control and logs an error when allowEmpty is %s',
+		(allowEmpty) => {
+			const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+			renderSetting({ allowEmpty, default: undefined });
+			expect(dropdowns).toHaveLength(0);
+			expect(error).toHaveBeenCalledExactlyOnceWith(
+				'Error: Layout missing default value'
+			);
+			error.mockRestore();
+		}
+	);
 });

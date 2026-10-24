@@ -143,7 +143,7 @@ settings:
 `class-select` creates a dropdown of predefined options. The value of the selected option is added as a class on the `body` element, and the classes of the other options are removed. It does not set a CSS variable, and the `id` of the setting is not used as a class name.
 
 - `allowEmpty` controls whether the dropdown has an empty choice. When it is `true`, the empty choice adds no class. If you leave `allowEmpty` out, it is treated as `false` and Style Settings shows a `MISSING_ALLOW_EMPTY` warning.
-- `default` is optional. It is the option whose class is added until the user picks another one. Without a `default`, no class is added until the user picks an option, even when `allowEmpty` is `false`, so set a `default` if your CSS expects one of the classes to be present. When `allowEmpty` is `true`, `default` may be set to `none` to start with the empty choice.
+- `default` is required. It is the option whose class is added until the user picks another one. Without a `default`, Style Settings does not show the dropdown at all, whatever `allowEmpty` is; it only logs a "missing default value" error in the developer console. When `allowEmpty` is `true`, `default` may be set to `none` to start with the empty choice.
 - A `default` that is not one of the options shows an `INVALID_DEFAULT` warning.
 
 ```css
