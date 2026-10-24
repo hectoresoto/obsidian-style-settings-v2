@@ -125,6 +125,7 @@ The open questions of the baseline were resolved as follows:
 - **Gradient lookup (AC-24):** matching gradient endpoints across sections only worked by accident (the gradient's own section also needed a saved color) and let unrelated sections feed each other. Lookup is now limited to the gradient's own section id, as the author guide said. Cross-section gradients stop working; the theme fallback for `to` is unchanged.
 - **Gradient `hex` format (AC-29):** gradients with `format: hex` used to emit `rgb(…)` values, because the `hex` output passes the color through unchanged and the step colors were rgb strings. They now emit hex, as the author guide says. Themes that use these variables as colors are unaffected; only code that parsed the `rgb(…)` text would notice.
 - **Heading nesting (AC-11):** the baseline said a heading nests under the closest preceding heading with a lower `level`. The code differs when a heading skips levels: after levels 1 and 3, a level 2 heading becomes a sibling of the level 1 heading instead of nesting under it. The code is kept and AC-11 now describes it, so existing themes keep their layout.
+- **`class-select` without `default` (AC-20):** a `default` is not required, even when `allowEmpty` is `false`; without a default and a saved value, no class is added. The author guide used to say a default was required and now documents this behavior instead.
 - **Heading level 0:** reserved for the implicit section heading. Validation keeps turning a `level: 0` in a block into 1; the TypeScript type for user headings now excludes 0.
 
 ## Test plan
@@ -153,11 +154,7 @@ The open questions of the baseline were resolved as follows:
 
 The author guide differs from the implemented behavior here. Until each is resolved, this spec describes the code.
 
-1. The author guide says there are 7 setting types; there are 11.
-2. The author guide says `class-select` sets a CSS variable named after `id`. It actually adds the selected option value as a class on `body` and sets no variable.
-3. The author guide says `class-select` must have a `default` when `allowEmpty` is `false`. This is not enforced: without a default and a saved value, no class is added.
-4. The author guide says `variable-color` requires a `default` in hex or rgb. `default` is optional, and `hsl…` defaults are also accepted.
-5. The author guide's "This will output the variable" examples show default values. Variables are emitted only for saved values (AC-19).
+None.
 
 ## Open questions
 
