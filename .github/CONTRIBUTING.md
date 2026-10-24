@@ -38,6 +38,7 @@ src/
 tests/
   browser/           Playwright regression tests
   tooling/           Lint configuration tests
+  unit/              Empty `obsidian` module that unit tests resolve and mock
   *.config.mjs       Vitest and Playwright settings
 scripts/             Build and release scripts
 docs/                Theme author guide, CSS snippet, screenshots and release notes

@@ -131,16 +131,18 @@ The open questions of the baseline were resolved as follows:
 | Criterion | Test |
 | --- | --- |
 | AC-1 to AC-7, AC-26, AC-28 | `src/settings/StyleSheetParser.test.ts` |
-| AC-8 | **Gap:** event wiring in `main.ts` has no unit tests |
-| AC-9 | **Gap** |
+| AC-8 | `src/main.test.ts` – "reparsing stylesheets" |
+| AC-9 | `src/Utils.test.ts` – "translated titles and descriptions" |
 | AC-10 | `src/settings/SettingsValidation.test.ts` (one `describe` per type) |
-| AC-11 to AC-13 | **Gap** |
+| AC-11 | `src/settingsView/components/HeadingSettingComponent.test.ts`. **Gap:** a heading that skips levels and is followed by a heading between the two levels (levels 1, 3, 2) is not covered, because the code places the level 2 heading at section level instead of under the level 1 heading |
+| AC-12 | `src/main.test.ts` – "class toggle commands" |
+| AC-13 | `src/settingsView/components/ClassMultiToggleSettingComponent.test.ts`; `src/settings/SettingsManager.test.ts` – "a saved none adds no class" |
 | AC-14, AC-17 | `src/settings/SettingsManager.test.ts` – "section export selection"; `tests/browser/settings.spec.mjs` – "reset removes the override…", "themed alpha colors persist and reset independently" |
-| AC-15 | **Gap** |
+| AC-15 | `src/settings/SettingsManager.test.ts` – "pruning removed settings" |
 | AC-16 | `tests/browser/settings.spec.mjs` – "changing snippet configuration removes and restores its settings" |
 | AC-18, AC-19, AC-21 | `src/settings/StyleGenerator.test.ts` – compatibility fixtures ("unsaved defaults remain in the snippet", "numbers text selects and ignored settings", "independent light and dark colors") |
-| AC-20 | **Gap** |
-| AC-22 | **Gap** |
+| AC-20 | `src/settings/SettingsManager.test.ts` – "class defaults" |
+| AC-22 | `src/Utils.test.ts` – "sanitizeText"; `src/settingsView/components/VariableTextSettingComponent.test.ts` |
 | AC-23 | `src/settings/StyleGenerator.test.ts` – "invalid saved colors produce diagnostics without CSS"; `src/settings/SettingsManager.test.ts` – "reports invalid values through the host…"; `tests/browser/settings.spec.mjs` – "invalid input … cannot corrupt a saved color" |
 | AC-24, AC-25 | `src/settings/StyleGenerator.test.ts` – gradient fixtures and "gradient endpoints are limited to their own section" |
 | AC-29 | `src/settings/StyleGenerator.test.ts` – "gradient steps use the gradient format" |
