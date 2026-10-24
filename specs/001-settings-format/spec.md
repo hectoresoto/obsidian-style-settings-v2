@@ -52,7 +52,7 @@ Every setting is passed through `validateAndNormalizeSetting`. Validation never 
 | `heading` | `level` 1–6, `collapsed?` | Groups the following settings | Missing, non-integer or out-of-range `level` is rounded and clamped to 1–6; missing becomes 1 (`INVALID_HEADING_LEVEL`). Level 0 is reserved for the implicit section heading (AC-11), so a `level: 0` in a block becomes 1 |
 | `info-text` | `markdown?` | Shows `description`, rendered as Markdown when `markdown: true` | None |
 | `class-toggle` | `default?` bool, `addCommand?` | Adds class `id` to `body` when on | Non-boolean `default` becomes `false` (`INVALID_DEFAULT`) |
-| `class-select` | `options`, `allowEmpty`, `default?` | Adds the selected option's value as a class on `body` | Missing `allowEmpty` becomes `false` (`MISSING_ALLOW_EMPTY`); `default` not in `options` warns and is kept (`INVALID_DEFAULT`) |
+| `class-select` | `options`, `allowEmpty`, `default` (the control is not shown without it, AC-30) | Adds the selected option's value as a class on `body` | Missing `allowEmpty` becomes `false` (`MISSING_ALLOW_EMPTY`); `default` not in `options` warns and is kept (`INVALID_DEFAULT`) |
 | `variable-text` | `default`, `quotes?` | `--id: <text>` | Missing `default` becomes `''` (`MISSING_DEFAULT`) |
 | `variable-number` | `default`, `format?` | `--id: <number><format>` | Missing or non-numeric `default` becomes `0` (`MISSING_DEFAULT`) |
 | `variable-number-slider` | `default`, `min`, `max`, `step`, `format?` | `--id: <number><format>` | Missing fields become `0/0/100/1` (`MISSING_SLIDER_FIELDS`); `min > max` swaps them (`INVALID_SLIDER_RANGE`); `step <= 0` becomes `1` (`INVALID_SLIDER_STEP`); `default` is clamped to the range (`INVALID_SLIDER_DEFAULT`) |
@@ -71,6 +71,7 @@ Color formats: `hex`, `rgb`, `rgb-values`, `rgb-split`, `hsl`, `hsl-values`, `hs
 - **AC-11:** Given headings, when the section is rendered, then each setting belongs to the closest preceding heading. The section `name` acts as an implicit level-0 heading. A heading with a higher `level` than the closest preceding heading nests under it. Otherwise the plugin walks back from that heading through the headings that contain it until it reaches one whose `level` is lower than or equal to the new heading's; the new heading becomes a sibling of that heading, or nests directly under the section if the walk reaches it. So headings at levels 1, 3, 2 give two headings directly under the section, with the level 3 heading inside the first: skipping a level does not make a later heading between the two levels nest under the earlier one.
 - **AC-12:** Given a `class-toggle` with `addCommand: true`, when settings load, then a command `style-settings-class-toggle-<sectionId>-<id>` named `Toggle <title>` is registered and flips the class.
 - **AC-13:** Given a `class-select` with `allowEmpty: true`, when it is rendered, then the dropdown includes an empty option whose stored value is `none`, which adds no class.
+- **AC-30:** Given a `class-select` whose `default` is missing or not a string, when it is rendered, then no control is shown for it and `Error: <title> missing default value` is logged to the console, whatever `allowEmpty` is. Validation does not warn about the missing `default`.
 
 ### Storage
 
@@ -125,7 +126,7 @@ The open questions of the baseline were resolved as follows:
 - **Gradient lookup (AC-24):** matching gradient endpoints across sections only worked by accident (the gradient's own section also needed a saved color) and let unrelated sections feed each other. Lookup is now limited to the gradient's own section id, as the author guide said. Cross-section gradients stop working; the theme fallback for `to` is unchanged.
 - **Gradient `hex` format (AC-29):** gradients with `format: hex` used to emit `rgb(…)` values, because the `hex` output passes the color through unchanged and the step colors were rgb strings. They now emit hex, as the author guide says. Themes that use these variables as colors are unaffected; only code that parsed the `rgb(…)` text would notice.
 - **Heading nesting (AC-11):** the baseline said a heading nests under the closest preceding heading with a lower `level`. The code differs when a heading skips levels: after levels 1 and 3, a level 2 heading becomes a sibling of the level 1 heading instead of nesting under it. The code is kept and AC-11 now describes it, so existing themes keep their layout.
-- **`class-select` without `default` (AC-20):** a `default` is not required, even when `allowEmpty` is `false`; without a default and a saved value, no class is added. The author guide used to say a default was required and now documents this behavior instead.
+- **`class-select` without `default` (AC-20, AC-30):** validation does not require a `default`, but the control is not rendered without one, so the user cannot pick an option and no class is added. The code is kept, and the author guide says a `default` is required for the dropdown to appear. An earlier version of this entry and of the guide said the dropdown still worked without a default; that was wrong.
 - **Heading level 0:** reserved for the implicit section heading. Validation keeps turning a `level: 0` in a block into 1; the TypeScript type for user headings now excludes 0.
 
 ## Test plan
@@ -139,6 +140,7 @@ The open questions of the baseline were resolved as follows:
 | AC-11 | `src/settingsView/components/HeadingSettingComponent.test.ts` |
 | AC-12 | `src/main.test.ts` – "class toggle commands" |
 | AC-13 | `src/settingsView/components/ClassMultiToggleSettingComponent.test.ts`; `src/settings/SettingsManager.test.ts` – "a saved none adds no class" |
+| AC-30 | `src/settingsView/components/ClassMultiToggleSettingComponent.test.ts` – "class-select without a default" |
 | AC-14, AC-17 | `src/settings/SettingsManager.test.ts` – "section export selection"; `tests/browser/settings.spec.mjs` – "reset removes the override…", "themed alpha colors persist and reset independently" |
 | AC-15 | `src/settings/SettingsManager.test.ts` – "pruning removed settings" |
 | AC-16 | `tests/browser/settings.spec.mjs` – "changing snippet configuration removes and restores its settings" |
