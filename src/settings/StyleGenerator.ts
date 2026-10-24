@@ -268,7 +268,8 @@ function pushColors(
 				...generateColorVariables(
 					`${id}-${i.toString().padStart(pad, '0')}`,
 					format,
-					c.css(),
+					// The hex format passes the color through unchanged, so hand it hex.
+					format === 'hex' ? c.hex() : c.css(),
 					c.alpha() !== 1,
 					[],
 					warnings

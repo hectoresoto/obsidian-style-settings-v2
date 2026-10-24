@@ -16,14 +16,14 @@ exports[`style generation compatibility > empty settings 1`] = `
 
 exports[`style generation compatibility > gradient endpoints from saved settings 1`] = `
 {
-  "cssText": "body.css-settings-manager { --start: #000000; --end: #ffffff; --shade-000: rgb(0,0,0); --shade-050: rgb(128,128,128); --shade-100: rgb(255,255,255); } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "cssText": "body.css-settings-manager { --start: #000000; --end: #ffffff; --shade-000: #000000; --shade-050: #808080; --shade-100: #ffffff; } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
   "warnings": [],
 }
 `;
 
 exports[`style generation compatibility > gradient falls back to current theme variables 1`] = `
 {
-  "cssText": "body.css-settings-manager { --start: #000000; --shade-000: rgb(0,0,0); --shade-050: rgb(128,128,128); --shade-100: rgb(255,255,255); } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
+  "cssText": "body.css-settings-manager { --start: #000000; --shade-000: #000000; --shade-050: #808080; --shade-100: #ffffff; } body.theme-light.css-settings-manager { } body.theme-dark.css-settings-manager { }",
   "warnings": [],
 }
 `;
