@@ -1,4 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CSSSetting } from './SettingHandlers';
+import type { SettingValue } from './SettingsTypes';
 
 const localStorageMock: Storage = {
 	length: 0,
@@ -16,6 +18,20 @@ Object.defineProperty(globalThis, 'window', {
 	writable: true,
 });
 
+const bodyClasses = new Set<string>();
+
+Object.defineProperty(globalThis, 'document', {
+	value: {
+		body: {
+			classList: {
+				add: (name: string) => bodyClasses.add(name),
+				remove: (name: string) => bodyClasses.delete(name),
+			},
+		},
+	},
+	writable: true,
+});
+
 vi.mock('../modals/ExportModal', () => ({
 	ExportModal: class {},
 }));
@@ -29,6 +45,22 @@ vi.mock('../main', () => ({
 }));
 
 const { CSSSettingsManager } = await import('./SettingsManager');
+
+function createManager(settings: Record<string, SettingValue> = {}) {
+	const manager = Object.create(CSSSettingsManager.prototype) as InstanceType<
+		typeof CSSSettingsManager
+	>;
+	manager.settings = settings;
+	manager.config = {};
+	manager.gradients = {};
+	manager.styleTag = { innerText: '' } as HTMLStyleElement;
+	manager.plugin = {
+		saveData: vi.fn(),
+		getCSSVar: vi.fn(() => ({})),
+		app: { workspace: { trigger: vi.fn() } },
+	} as unknown as typeof manager.plugin;
+	return manager;
+}
 
 describe('section export selection', () => {
 	it('preserves false, zero, empty text and theme overrides without leaking other sections', () => {
@@ -189,5 +221,124 @@ describe('blocks sharing a section id', () => {
 		expect(Object.keys(manager.config.shared)).toEqual(['first', 'second']);
 		expect(manager.styleTag.innerText).toContain('--first: #000000;');
 		expect(manager.styleTag.innerText).toContain('--second: #ffffff;');
+	});
+});
+
+describe('pruning removed settings', () => {
+	it('AC-15: deletes saved values of setting ids that are gone from a section that still exists', () => {
+		const manager = createManager({
+			'ocean@@kept': '#000000',
+			'ocean@@removed': true,
+			'ocean@@tint@@light': '#ffffff',
+			'ocean@@tint@@dark': '#111111',
+			'disabled@@spacing': 4,
+		});
+		manager.setConfig([
+			{
+				name: 'Ocean',
+				id: 'ocean',
+				collapsed: true,
+				settings: [
+					{
+						id: 'kept',
+						title: 'Kept',
+						type: 'variable-color',
+						format: 'hex',
+					},
+				],
+			},
+		]);
+		const expected = {
+			'ocean@@kept': '#000000',
+			'disabled@@spacing': 4,
+		};
+		expect(manager.settings).toEqual(expected);
+		expect(manager.plugin.saveData).toHaveBeenCalledExactlyOnceWith(expected);
+	});
+
+	it('AC-15: keeps every value and does not save when nothing was removed', () => {
+		const manager = createManager({ 'ocean@@kept': '#000000' });
+		manager.setConfig([
+			{
+				name: 'Ocean',
+				id: 'ocean',
+				collapsed: true,
+				settings: [
+					{
+						id: 'kept',
+						title: 'Kept',
+						type: 'variable-color',
+						format: 'hex',
+					},
+				],
+			},
+		]);
+		expect(manager.settings).toEqual({ 'ocean@@kept': '#000000' });
+		expect(manager.plugin.saveData).not.toHaveBeenCalled();
+	});
+});
+
+describe('class defaults', () => {
+	const settings: CSSSetting[] = [
+		{ id: 'toggle-on', title: 'On', type: 'class-toggle', default: true },
+		{ id: 'toggle-off', title: 'Off', type: 'class-toggle', default: false },
+		{ id: 'toggle-none', title: 'None', type: 'class-toggle' },
+		{
+			id: 'layout',
+			title: 'Layout',
+			type: 'class-select',
+			allowEmpty: true,
+			options: ['layout-wide', { label: 'Narrow', value: 'layout-narrow' }],
+			default: 'layout-wide',
+		},
+		{
+			id: 'density',
+			title: 'Density',
+			type: 'class-select',
+			allowEmpty: false,
+			options: ['density-compact', 'density-cozy'],
+		},
+	];
+
+	function applyClasses(saved: Record<string, SettingValue>) {
+		const manager = createManager(saved);
+		manager.config = {
+			ocean: Object.fromEntries(settings.map((s) => [s.id, s])),
+		};
+		manager.initClasses();
+		return [...bodyClasses].sort();
+	}
+
+	beforeEach(() => {
+		bodyClasses.clear();
+	});
+
+	it('AC-20: adds default classes to body when nothing is saved', () => {
+		expect(applyClasses({})).toEqual(['layout-wide', 'toggle-on']);
+	});
+
+	it('AC-20: saved values replace the defaults', () => {
+		expect(
+			applyClasses({
+				'ocean@@toggle-on': false,
+				'ocean@@toggle-off': true,
+				'ocean@@layout': 'layout-narrow',
+				'ocean@@density': 'density-cozy',
+			})
+		).toEqual(['density-cozy', 'layout-narrow', 'toggle-off']);
+	});
+
+	it('AC-13: a saved none adds no class, not even the default', () => {
+		expect(applyClasses({ 'ocean@@layout': 'none' })).toEqual(['toggle-on']);
+	});
+
+	it('removeClasses removes every option and toggle class again', () => {
+		const manager = createManager({ 'ocean@@density': 'density-cozy' });
+		manager.config = {
+			ocean: Object.fromEntries(settings.map((s) => [s.id, s])),
+		};
+		manager.initClasses();
+		manager.removeClasses();
+		expect([...bodyClasses]).toEqual([]);
 	});
 });

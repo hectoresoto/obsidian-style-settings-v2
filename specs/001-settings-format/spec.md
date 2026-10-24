@@ -68,7 +68,7 @@ Unknown `type` values pass through validation unchanged.
 Color formats: `hex`, `rgb`, `rgb-values`, `rgb-split`, `hsl`, `hsl-values`, `hsl-split`, `hsl-split-decimal`. Output for each format, with and without `opacity`, is documented in the author guide and fixed by the compatibility snapshots in `src/settings/__snapshots__/StyleGenerator.test.ts.snap`.
 
 - **AC-10:** Given a setting with an invalid field covered by the table above, when it is validated, then the field is corrected as described and one warning with the listed code is returned.
-- **AC-11:** Given headings, when the section is rendered, then each setting belongs to the closest preceding heading, and a heading nests under the closest preceding heading with a lower `level`. The section `name` acts as an implicit level-0 heading.
+- **AC-11:** Given headings, when the section is rendered, then each setting belongs to the closest preceding heading. The section `name` acts as an implicit level-0 heading. A heading with a higher `level` than the closest preceding heading nests under it. Otherwise the plugin walks back from that heading through the headings that contain it until it reaches one whose `level` is lower than or equal to the new heading's; the new heading becomes a sibling of that heading, or nests directly under the section if the walk reaches it. So headings at levels 1, 3, 2 give two headings directly under the section, with the level 3 heading inside the first: skipping a level does not make a later heading between the two levels nest under the earlier one.
 - **AC-12:** Given a `class-toggle` with `addCommand: true`, when settings load, then a command `style-settings-class-toggle-<sectionId>-<id>` named `Toggle <title>` is registered and flips the class.
 - **AC-13:** Given a `class-select` with `allowEmpty: true`, when it is rendered, then the dropdown includes an empty option whose stored value is `none`, which adds no class.
 
@@ -124,6 +124,7 @@ The open questions of the baseline were resolved as follows:
 - **Duplicate section ids (AC-27, AC-28):** the second block used to replace the first in the stored configuration, so the first block's saved values were pruned and its controls had no effect. Blocks that share an id are now merged, which also lets authors split a long section into several blocks. Only a real conflict, the same setting id twice under one section id, warns.
 - **Gradient lookup (AC-24):** matching gradient endpoints across sections only worked by accident (the gradient's own section also needed a saved color) and let unrelated sections feed each other. Lookup is now limited to the gradient's own section id, as the author guide said. Cross-section gradients stop working; the theme fallback for `to` is unchanged.
 - **Gradient `hex` format (AC-29):** gradients with `format: hex` used to emit `rgb(…)` values, because the `hex` output passes the color through unchanged and the step colors were rgb strings. They now emit hex, as the author guide says. Themes that use these variables as colors are unaffected; only code that parsed the `rgb(…)` text would notice.
+- **Heading nesting (AC-11):** the baseline said a heading nests under the closest preceding heading with a lower `level`. The code differs when a heading skips levels: after levels 1 and 3, a level 2 heading becomes a sibling of the level 1 heading instead of nesting under it. The code is kept and AC-11 now describes it, so existing themes keep their layout.
 - **`class-select` without `default` (AC-20):** a `default` is not required, even when `allowEmpty` is `false`; without a default and a saved value, no class is added. The author guide used to say a default was required and now documents this behavior instead.
 - **Heading level 0:** reserved for the implicit section heading. Validation keeps turning a `level: 0` in a block into 1; the TypeScript type for user headings now excludes 0.
 
@@ -132,16 +133,18 @@ The open questions of the baseline were resolved as follows:
 | Criterion | Test |
 | --- | --- |
 | AC-1 to AC-7, AC-26, AC-28 | `src/settings/StyleSheetParser.test.ts` |
-| AC-8 | **Gap:** event wiring in `main.ts` has no unit tests |
-| AC-9 | **Gap** |
+| AC-8 | `src/main.test.ts` – "reparsing stylesheets" |
+| AC-9 | `src/Utils.test.ts` – "translated titles and descriptions" |
 | AC-10 | `src/settings/SettingsValidation.test.ts` (one `describe` per type) |
-| AC-11 to AC-13 | **Gap** |
+| AC-11 | `src/settingsView/components/HeadingSettingComponent.test.ts` |
+| AC-12 | `src/main.test.ts` – "class toggle commands" |
+| AC-13 | `src/settingsView/components/ClassMultiToggleSettingComponent.test.ts`; `src/settings/SettingsManager.test.ts` – "a saved none adds no class" |
 | AC-14, AC-17 | `src/settings/SettingsManager.test.ts` – "section export selection"; `tests/browser/settings.spec.mjs` – "reset removes the override…", "themed alpha colors persist and reset independently" |
-| AC-15 | **Gap** |
+| AC-15 | `src/settings/SettingsManager.test.ts` – "pruning removed settings" |
 | AC-16 | `tests/browser/settings.spec.mjs` – "changing snippet configuration removes and restores its settings" |
 | AC-18, AC-19, AC-21 | `src/settings/StyleGenerator.test.ts` – compatibility fixtures ("unsaved defaults remain in the snippet", "numbers text selects and ignored settings", "independent light and dark colors") |
-| AC-20 | **Gap** |
-| AC-22 | **Gap** |
+| AC-20 | `src/settings/SettingsManager.test.ts` – "class defaults" |
+| AC-22 | `src/Utils.test.ts` – "sanitizeText"; `src/settingsView/components/VariableTextSettingComponent.test.ts` |
 | AC-23 | `src/settings/StyleGenerator.test.ts` – "invalid saved colors produce diagnostics without CSS"; `src/settings/SettingsManager.test.ts` – "reports invalid values through the host…"; `tests/browser/settings.spec.mjs` – "invalid input … cannot corrupt a saved color" |
 | AC-24, AC-25 | `src/settings/StyleGenerator.test.ts` – gradient fixtures and "gradient endpoints are limited to their own section" |
 | AC-29 | `src/settings/StyleGenerator.test.ts` – "gradient steps use the gradient format" |
