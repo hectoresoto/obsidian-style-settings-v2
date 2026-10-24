@@ -61,10 +61,17 @@ export interface Meta extends WithTitle, WithDescription {
 	type: SettingType;
 }
 
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
 export interface Heading extends Meta {
-	level: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+	level: HeadingLevel;
 	collapsed?: boolean;
 	resetFn?: () => void;
+}
+
+/** The implicit heading built from a section's `name`; level 0 is reserved for it. */
+export interface SectionHeading extends Omit<Heading, 'level'> {
+	level: 0;
 }
 
 export interface InfoText extends Meta {

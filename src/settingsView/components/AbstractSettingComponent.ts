@@ -1,4 +1,4 @@
-import { CSSSetting } from '../../settings/SettingHandlers';
+import { CSSSetting, SectionHeading } from '../../settings/SettingHandlers';
 import { CSSSettingsManager } from '../../settings/SettingsManager';
 import { getDescription, getTitle } from '../../Utils';
 import fuzzysort from 'fuzzysort';
@@ -9,7 +9,7 @@ export abstract class AbstractSettingComponent extends Component {
 	childEl: HTMLElement | null = null;
 	sectionId: string;
 	sectionName: string;
-	setting: CSSSetting;
+	setting: CSSSetting | SectionHeading;
 	settingsManager: CSSSettingsManager;
 	isView: boolean;
 
@@ -17,7 +17,7 @@ export abstract class AbstractSettingComponent extends Component {
 		parent: AbstractSettingComponent | HTMLElement,
 		sectionId: string,
 		sectionName: string,
-		setting: CSSSetting,
+		setting: CSSSetting | SectionHeading,
 		settingsManager: CSSSettingsManager,
 		isView: boolean
 	) {

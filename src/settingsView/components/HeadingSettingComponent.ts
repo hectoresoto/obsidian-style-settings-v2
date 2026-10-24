@@ -1,4 +1,8 @@
-import { CSSSetting, Heading } from '../../settings/SettingHandlers';
+import {
+	CSSSetting,
+	Heading,
+	SectionHeading,
+} from '../../settings/SettingHandlers';
 import { getDescription, getTitle } from '../../Utils';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { ClassMultiToggleSettingComponent } from './ClassMultiToggleSettingComponent';
@@ -122,6 +126,7 @@ export function buildSettingComponentTree(opts: {
 	isView: boolean;
 	sectionId: string;
 	sectionName: string;
+	sectionHeading: SectionHeading;
 	settings: CSSSetting[];
 	settingsManager: CSSSettingsManager;
 }): HeadingSettingComponent {
@@ -129,6 +134,7 @@ export function buildSettingComponentTree(opts: {
 		containerEl,
 		isView,
 		sectionId,
+		sectionHeading,
 		settings,
 		settingsManager,
 		sectionName,
@@ -138,14 +144,14 @@ export function buildSettingComponentTree(opts: {
 		containerEl,
 		sectionId,
 		sectionName,
-		settings[0],
+		sectionHeading,
 		settingsManager,
 		isView
 	);
 
 	let currentHeading: HeadingSettingComponent = root;
 
-	for (const setting of settings.splice(1)) {
+	for (const setting of settings) {
 		if (setting.type === 'heading') {
 			const newHeading: Heading = setting as Heading;
 
@@ -181,7 +187,7 @@ export function buildSettingComponentTree(opts: {
 }
 
 export class HeadingSettingComponent extends AbstractSettingComponent {
-	setting!: Heading;
+	setting!: Heading | SectionHeading;
 	settingEl!: Setting;
 	parent!: HeadingSettingComponent;
 	children: AbstractSettingComponent[] = [];

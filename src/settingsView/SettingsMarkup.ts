@@ -1,4 +1,4 @@
-import { CSSSetting, ParsedCSSSettings } from '../settings/SettingHandlers';
+import { ParsedCSSSettings, SectionHeading } from '../settings/SettingHandlers';
 import { ErrorList } from '../Utils';
 import CSSSettingsPlugin from '../main';
 import {
@@ -182,20 +182,17 @@ export class SettingsMarkup extends Component {
 		this.settingsComponentTrees = [];
 
 		for (const s of settings) {
-			const options: CSSSetting[] = [
-				{
-					id: s.id,
-					type: 'heading',
-					title: s.name,
-					level: 0,
-					collapsed: s.collapsed ?? true,
-					resetFn: () => {
-						plugin.settingsManager.clearSection(s.id);
-						this.rerender();
-					},
+			const sectionHeading: SectionHeading = {
+				id: s.id,
+				type: 'heading',
+				title: s.name,
+				level: 0,
+				collapsed: s.collapsed ?? true,
+				resetFn: () => {
+					plugin.settingsManager.clearSection(s.id);
+					this.rerender();
 				},
-				...s.settings,
-			];
+			};
 
 			try {
 				const settingsComponentTree = buildSettingComponentTree({
@@ -203,7 +200,8 @@ export class SettingsMarkup extends Component {
 					isView: this.isView,
 					sectionId: s.id,
 					sectionName: s.name,
-					settings: options,
+					sectionHeading,
+					settings: s.settings,
 					settingsManager: plugin.settingsManager,
 				});
 

@@ -64,12 +64,12 @@ describe('validateAndNormalizeSetting', () => {
 		});
 
 		it('clamps level 0 to 1', () => {
-			const heading: Heading = {
+			const heading = {
 				id: 'heading-low',
 				title: 'Heading',
 				type: SettingType.HEADING,
 				level: 0,
-			};
+			} as unknown as Heading;
 
 			const result = validateAndNormalizeSetting(heading);
 

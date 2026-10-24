@@ -229,3 +229,62 @@ describe('style generation compatibility', () => {
 		expect(second).toEqual(generateStyles(fixtures[3]));
 	});
 });
+
+describe('gradient endpoints are limited to their own section', () => {
+	const sections = (oceanSettings: CSSSetting[]): MappedSettings => ({
+		ocean: Object.fromEntries(oceanSettings.map((s) => [s.id, s])),
+		other: { start, end },
+	});
+
+	it('AC-24: ignores a matching color id saved in another section', () => {
+		const accent: CSSSetting = { ...start, id: 'accent' };
+		const { variables } = generateStyles({
+			settings: {
+				'ocean@@accent': '#123456',
+				'other@@start': '#000000',
+				'other@@end': '#ffffff',
+			},
+			config: sections([accent, gradient]),
+			gradients: { ocean: [gradient] },
+		});
+		expect(variables.base.map((kv) => kv.key)).toEqual([
+			'accent',
+			'start',
+			'end',
+		]);
+	});
+
+	it("AC-24: uses the gradient's own section when another section saves the same ids", () => {
+		const { variables } = generateStyles({
+			settings: {
+				'ocean@@start': '#000000',
+				'ocean@@end': '#ffffff',
+				'other@@start': '#ff0000',
+				'other@@end': '#00ff00',
+			},
+			config: sections([start, end, gradient]),
+			gradients: { ocean: [gradient] },
+		});
+		expect(variables.base).toContainEqual({
+			key: 'shade-000',
+			value: 'rgb(0,0,0)',
+		});
+		expect(variables.base).toContainEqual({
+			key: 'shade-100',
+			value: 'rgb(255,255,255)',
+		});
+	});
+
+	it("AC-24: falls back to the theme value of to, not another section's saved color", () => {
+		const { variables } = generateStyles({
+			settings: { 'ocean@@start': '#000000', 'other@@end': '#00ff00' },
+			config: sections([start, gradient]),
+			gradients: { ocean: [gradient] },
+			themeVariables: { end: { current: '#ffffff' } },
+		});
+		expect(variables.base).toContainEqual({
+			key: 'shade-100',
+			value: 'rgb(255,255,255)',
+		});
+	});
+});

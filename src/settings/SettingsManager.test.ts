@@ -144,3 +144,50 @@ describe('style generator host integration', () => {
 		}
 	});
 });
+
+describe('blocks sharing a section id', () => {
+	it('AC-27: merges their settings so saved values are kept, not pruned, and applied', () => {
+		const manager = Object.create(CSSSettingsManager.prototype) as InstanceType<
+			typeof CSSSettingsManager
+		>;
+		manager.settings = {
+			'shared@@first': '#000000',
+			'shared@@second': '#ffffff',
+		};
+		manager.styleTag = { innerText: '' } as HTMLStyleElement;
+		const saveData = vi.fn();
+		manager.plugin = {
+			saveData,
+			getCSSVar: vi.fn(() => ({})),
+			app: { workspace: { trigger: vi.fn() } },
+		} as unknown as typeof manager.plugin;
+		const color = (id: string) => ({
+			id,
+			title: id,
+			type: 'variable-color' as const,
+			format: 'hex' as const,
+		});
+		manager.setConfig([
+			{
+				name: 'First',
+				id: 'shared',
+				collapsed: true,
+				settings: [color('first')],
+			},
+			{
+				name: 'Second',
+				id: 'shared',
+				collapsed: true,
+				settings: [color('second')],
+			},
+		]);
+		expect(saveData).not.toHaveBeenCalled();
+		expect(manager.settings).toEqual({
+			'shared@@first': '#000000',
+			'shared@@second': '#ffffff',
+		});
+		expect(Object.keys(manager.config.shared)).toEqual(['first', 'second']);
+		expect(manager.styleTag.innerText).toContain('--first: #000000;');
+		expect(manager.styleTag.innerText).toContain('--second: #ffffff;');
+	});
+});

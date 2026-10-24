@@ -43,9 +43,11 @@ will result in:
 
 Each setting definition must be separated by a dash (`-`). There are 7 setting types.
 
+A long section can be split into several `@settings` comments that use the same `id`. Each comment is shown under its own `name`, but the settings are stored together, and resetting one of them resets all settings under that `id`.
+
 All settings definitions must have these parameters:
 
-- `id`: A unique id for the setting parameter
+- `id`: A unique id for the setting parameter. It must be unique within the section `id`, also across blocks that share that `id`; if it is not, Style Settings shows a `DUPLICATE_SETTING_ID` warning
 - `title`: The name of the setting
 - `description` (optional): a description of the setting
 - `type`: The type of setting. Can be one of:
@@ -520,7 +522,7 @@ When `opacity` is set to `true`:
 
 ## `color-gradient`
 
-`color-gradient` outputs a fixed number of colors along a gradient between two existing color variables. A `format` attribute is also required. *Note: The `to` variable must be set in style settings for the gradient to be generated. Also, gradients will only be generated using colors defined under the current style settings `id`.*
+`color-gradient` outputs a fixed number of colors along a gradient between two existing color variables. A `format` attribute is also required. *Note: `from` must be a `variable-color` or `variable-themed-color` in the same section `id` that the user has changed in Style Settings. `to` can be such a color too; if it is not, the theme's current value of the `--to` variable is used. Colors from sections with a different `id` are never used.*
 
 Parameters:
 - `from`: The starting color, or color that will be at step 0

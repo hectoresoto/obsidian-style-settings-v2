@@ -142,7 +142,8 @@ export class CSSSettingsManager {
 		this.gradients = {};
 
 		settings.forEach((s) => {
-			this.config[s.id] = {};
+			// Blocks that share a section id are merged instead of replacing each other.
+			if (!this.config[s.id]) this.config[s.id] = {};
 			if (Array.isArray(s.settings)) {
 				s.settings.forEach((setting) => {
 					this.config[s.id][setting.id] = setting;

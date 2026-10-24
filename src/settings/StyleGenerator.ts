@@ -289,6 +289,7 @@ function getCSSVariables(
 	const themedLight: VariableKV = [];
 	const themedDark: VariableKV = [];
 
+	// Keyed by `<sectionId>@@<settingId>`: gradients only use colors of their own section.
 	const gradientCandidates: Record<string, string> = {};
 	const gradientCandidatesLight: Record<string, string> = {};
 	const gradientCandidatesDark: Record<string, string> = {};
@@ -372,7 +373,7 @@ function getCSSVariables(
 						[],
 						warnings
 					).forEach((kv) => {
-						gradientCandidates[kv.key] = kv.value;
+						gradientCandidates[`${sectionId}@@${kv.key}`] = kv.value;
 					});
 				} else if (rawColor) {
 					warnings.push(
@@ -415,9 +416,9 @@ function getCSSVariables(
 						warnings
 					).forEach((kv) => {
 						if (modifier === 'light') {
-							gradientCandidatesLight[kv.key] = kv.value;
+							gradientCandidatesLight[`${sectionId}@@${kv.key}`] = kv.value;
 						} else {
-							gradientCandidatesDark[kv.key] = kv.value;
+							gradientCandidatesDark[`${sectionId}@@${kv.key}`] = kv.value;
 						}
 					});
 				} else if (rawColor) {
@@ -436,11 +437,13 @@ function getCSSVariables(
 
 		g.forEach((def) => {
 			const { from, to, format, step, id, pad = 0 } = def;
+			const fromKey = `${sectionId}@@${from}`;
+			const toKey = `${sectionId}@@${to}`;
 
-			if (gradientCandidatesLight[from]) {
-				const fromColor = gradientCandidatesLight[from];
+			if (gradientCandidatesLight[fromKey]) {
+				const fromColor = gradientCandidatesLight[fromKey];
 				const toColor =
-					gradientCandidatesLight[to] || themeVariables[to]?.light?.trim();
+					gradientCandidatesLight[toKey] || themeVariables[to]?.light?.trim();
 
 				if (toColor) {
 					pushColors(
@@ -456,10 +459,10 @@ function getCSSVariables(
 				}
 			}
 
-			if (gradientCandidatesDark[from]) {
-				const fromColor = gradientCandidatesDark[from];
+			if (gradientCandidatesDark[fromKey]) {
+				const fromColor = gradientCandidatesDark[fromKey];
 				const toColor =
-					gradientCandidatesDark[to] || themeVariables[to]?.dark?.trim();
+					gradientCandidatesDark[toKey] || themeVariables[to]?.dark?.trim();
 
 				if (toColor) {
 					pushColors(
@@ -475,10 +478,10 @@ function getCSSVariables(
 				}
 			}
 
-			if (gradientCandidates[from]) {
-				const fromColor = gradientCandidates[from];
+			if (gradientCandidates[fromKey]) {
+				const fromColor = gradientCandidates[fromKey];
 				const toColor =
-					gradientCandidates[to] || themeVariables[to]?.current?.trim();
+					gradientCandidates[toKey] || themeVariables[to]?.current?.trim();
 
 				if (toColor) {
 					pushColors(vars, id, fromColor, toColor, format, step, pad, warnings);
