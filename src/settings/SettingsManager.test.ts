@@ -16,15 +16,15 @@ Object.defineProperty(globalThis, 'window', {
 	writable: true,
 });
 
-vi.mock('./ExportModal', () => ({
+vi.mock('../modals/ExportModal', () => ({
 	ExportModal: class {},
 }));
 
-vi.mock('./ImportModal', () => ({
+vi.mock('../modals/ImportModal', () => ({
 	ImportModal: class {},
 }));
 
-vi.mock('./main', () => ({
+vi.mock('../main', () => ({
 	default: class {},
 }));
 

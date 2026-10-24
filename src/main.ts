@@ -1,5 +1,5 @@
-import { ClassToggle, CSSSetting, ParsedCSSSettings } from './SettingHandlers';
-import { CSSSettingsManager } from './SettingsManager';
+import { ClassToggle, CSSSetting, ParsedCSSSettings } from './settings/SettingHandlers';
+import { CSSSettingsManager } from './settings/SettingsManager';
 import {
 	ErrorList,
 	getDescription,
@@ -11,12 +11,12 @@ import {
 import {
 	validateAndNormalizeSetting,
 	ValidationWarning,
-} from './SettingsValidation';
+} from './settings/SettingsValidation';
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import './css/pickerOverrides.css';
 import './css/settings.css';
 import { CSSSettingsTab } from './settingsView/CSSSettingsTab';
-import { SettingType } from './settingsView/SettingComponents/types';
+import { SettingType } from './settings/SettingType';
 import { SettingsView, viewType } from './settingsView/SettingsView';
 import detectIndent from 'detect-indent';
 import { CORE_SCHEMA, load, mergeTag } from 'js-yaml';

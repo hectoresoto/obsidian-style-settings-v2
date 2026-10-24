@@ -1,5 +1,5 @@
-import { ExportModal } from './ExportModal';
-import { ImportModal } from './ImportModal';
+import { ExportModal } from '../modals/ExportModal';
+import { ImportModal } from '../modals/ImportModal';
 import type {
 	ClassMultiToggle,
 	ClassToggle,
@@ -12,8 +12,8 @@ import type {
 	SettingValue,
 } from './SettingsTypes';
 import { generateStyles, type ThemeVariables } from './StyleGenerator';
-import type CSSSettingsPlugin from './main';
-import { SettingType } from './settingsView/SettingComponents/types';
+import type CSSSettingsPlugin from '../main';
+import { SettingType } from './SettingType';
 
 // Keep existing import paths available to settings controls and integrations.
 export type {

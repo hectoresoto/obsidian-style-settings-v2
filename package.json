@@ -6,25 +6,32 @@
   "packageManager": "pnpm@10.32.1",
   "scripts": {
     "typecheck": "tsc --noemit",
-    "dev": "node esbuild.config.mjs",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-    "test": "vitest run",
-    "test:browser": "playwright test",
+    "dev": "node scripts/esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs production",
+    "test": "vitest run --config tests/vitest.config.mjs",
+    "test:browser": "playwright test --config tests/playwright.config.mjs",
     "lint": "eslint ./src --max-warnings=0",
     "lint:fix": "eslint ./src --fix --max-warnings=0",
     "prettier": "prettier --write \"./src/**/*.{ts,tsx}\"",
     "clean": "pnpm run prettier && pnpm run lint:fix",
-    "rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > release-notes.md && git add release-notes.md",
-    "bump": "node version-bump.mjs && git add manifest.json versions.json && pnpm run rlnotes",
+    "rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > docs/release-notes.md && git add docs/release-notes.md",
+    "bump": "node scripts/version-bump.mjs && git add manifest.json versions.json && pnpm run rlnotes",
     "release": "git commit -m $npm_package_version && git tag $npm_package_version && git push && git push --tags"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": "26.x"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "useTabs": true
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
-    "@trivago/prettier-plugin-sort-imports": "4.2.0",
     "@types/node": "16.11.6",
     "@typescript/native": "npm:typescript@7.0.2",
     "builtin-modules": "3.3.0",

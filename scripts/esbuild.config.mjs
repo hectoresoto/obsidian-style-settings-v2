@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
-import { copyFile } from "node:fs/promises";
+import { rename } from "node:fs/promises";
 
 const banner =
 `/*
@@ -23,7 +23,8 @@ const context = await esbuild.context({
 		setup(build) {
 			build.onEnd(async (result) => {
 				if (result.errors.length === 0) {
-					await copyFile("main.css", "styles.css");
+					// Obsidian loads styles.css, so the bundled CSS is renamed to it.
+					await rename("main.css", "styles.css");
 				}
 			});
 		},

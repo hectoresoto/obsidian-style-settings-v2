@@ -1,14 +1,13 @@
-import { resetTooltip, VariableNumber } from '../../SettingHandlers';
+import { resetTooltip, VariableNumberSlider } from '../../settings/SettingHandlers';
 import { createDescription, getDescription, getTitle } from '../../Utils';
 import { t } from '../../lang/helpers';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
-import { parseNumericInput } from './numericUtils';
-import { debounce, Setting, TextComponent } from 'obsidian';
+import { debounce, Setting, SliderComponent } from 'obsidian';
 
-export class VariableNumberSettingComponent extends AbstractSettingComponent {
+export class VariableNumberSliderSettingComponent extends AbstractSettingComponent {
 	settingEl!: Setting;
-	textComponent!: TextComponent;
-	setting!: VariableNumber;
+	sliderComponent!: SliderComponent;
+	setting!: VariableNumberSlider;
 
 	render(): void {
 		if (!this.containerEl) return;
@@ -27,37 +26,37 @@ export class VariableNumberSettingComponent extends AbstractSettingComponent {
 			createDescription(description, this.setting.default.toString(10))
 		);
 
-		this.settingEl.addText((text) => {
+		this.settingEl.addSlider((slider) => {
 			const value = this.settingsManager.getSetting(
 				this.sectionId,
 				this.setting.id
 			);
 			const onChange = debounce(
-				(value: string) => {
-					const parsed = parseNumericInput(value);
-					if (parsed === null) return;
+				(value: number) => {
 					this.settingsManager.setSetting(
 						this.sectionId,
 						this.setting.id,
-						parsed
+						value
 					);
 				},
 				250,
 				true
 			);
 
-			text.setValue(
-				value !== undefined ? value.toString() : this.setting.default.toString()
+			slider.setDynamicTooltip();
+			slider.setLimits(this.setting.min, this.setting.max, this.setting.step);
+			slider.setValue(
+				value !== undefined ? (value as number) : this.setting.default
 			);
-			text.onChange(onChange);
+			slider.onChange(onChange);
 
-			this.textComponent = text;
+			this.sliderComponent = slider;
 		});
 
 		this.settingEl.addExtraButton((b) => {
 			b.setIcon('reset');
 			b.onClick(() => {
-				this.textComponent.setValue(this.setting.default.toString());
+				this.sliderComponent.setValue(this.setting.default);
 				this.settingsManager.clearSetting(this.sectionId, this.setting.id);
 			});
 			b.setTooltip(resetTooltip);

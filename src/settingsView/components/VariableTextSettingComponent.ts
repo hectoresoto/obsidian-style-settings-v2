@@ -1,4 +1,4 @@
-import { resetTooltip, VariableText } from '../../SettingHandlers';
+import { resetTooltip, VariableText } from '../../settings/SettingHandlers';
 import {
 	createDescription,
 	getDescription,

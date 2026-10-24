@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { ValidationResult } from './SettingsValidation';
-import { SettingType } from './settingsView/SettingComponents/types';
+import { SettingType } from './SettingType';
 import {
 	ClassMultiToggle,
 	ClassToggle,

@@ -1,4 +1,4 @@
-import { SettingType } from './settingsView/SettingComponents/types';
+import { SettingType } from './SettingType';
 
 export const resetTooltip = 'Restore default';
 

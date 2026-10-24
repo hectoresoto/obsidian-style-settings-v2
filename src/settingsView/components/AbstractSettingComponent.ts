@@ -1,5 +1,5 @@
-import { CSSSetting } from '../../SettingHandlers';
-import { CSSSettingsManager } from '../../SettingsManager';
+import { CSSSetting } from '../../settings/SettingHandlers';
+import { CSSSettingsManager } from '../../settings/SettingsManager';
 import { getDescription, getTitle } from '../../Utils';
 import fuzzysort from 'fuzzysort';
 import { Component } from 'obsidian';

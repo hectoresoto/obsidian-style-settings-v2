@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseNumericInput } from './numericUtils';
+import { parseNumericInput } from './NumericUtils';
 
 describe('parseNumericInput', () => {
 	it('parses integer strings', () => {

@@ -12,8 +12,8 @@ import {
 	VariableThemedColor,
 	ColorFormat,
 } from './SettingHandlers';
-import { SettingType } from './settingsView/SettingComponents/types';
-import { isValidDefaultColor } from './Utils';
+import { SettingType } from './SettingType';
+import { isValidDefaultColor } from '../Utils';
 
 export interface ValidationWarning {
 	code: string;

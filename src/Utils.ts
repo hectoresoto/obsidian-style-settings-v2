@@ -1,4 +1,4 @@
-import { Meta, WithDescription, WithTitle } from './SettingHandlers';
+import { Meta, WithDescription, WithTitle } from './settings/SettingHandlers';
 import { lang, t } from './lang/helpers';
 import Pickr from '@simonwep/pickr';
 
@@ -25,7 +25,7 @@ export function getDescription<T extends Meta>(config: T): string | undefined {
 	return config.description;
 }
 
-export { isValidDefaultColor, isValidSavedColor } from './ColorUtils';
+export { isValidDefaultColor, isValidSavedColor } from './color/ColorUtils';
 
 export function getPickrSettings(opts: {
 	isView: boolean;

@@ -1,6 +1,6 @@
-import { resetTooltip, VariableColor } from '../../SettingHandlers';
-import { bindExclusiveColorPicker } from '../../ExclusiveColorPicker';
-import { bindColorPickerInput } from '../../ColorPickerInput';
+import { resetTooltip, VariableColor } from '../../settings/SettingHandlers';
+import { bindExclusiveColorPicker } from '../../color/ExclusiveColorPicker';
+import { bindColorPickerInput } from '../../color/ColorPickerInput';
 import {
 	createDescription,
 	getDescription,
