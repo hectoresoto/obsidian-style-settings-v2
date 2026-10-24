@@ -1,8 +1,8 @@
 import CSSSettingsPlugin from '../main';
 import { SettingsMarkup } from './SettingsMarkup';
 import { ItemView, WorkspaceLeaf } from 'obsidian';
-import { ParsedCSSSettings } from 'src/SettingHandlers';
-import { ErrorList } from 'src/Utils';
+import { ParsedCSSSettings } from '../settings/SettingHandlers';
+import { ErrorList } from '../Utils';
 
 export const viewType = 'style-settings';
 

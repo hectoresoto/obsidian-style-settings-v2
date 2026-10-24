@@ -1,20 +1,21 @@
 import {
+	ClassMultiToggle,
 	resetTooltip,
 	SelectOption,
-	VariableSelect,
-} from '../../SettingHandlers';
+} from '../../settings/SettingHandlers';
 import { createDescription, getDescription, getTitle } from '../../Utils';
 import { t } from '../../lang/helpers';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { DropdownComponent, Setting } from 'obsidian';
 
-export class VariableSelectSettingComponent extends AbstractSettingComponent {
+export class ClassMultiToggleSettingComponent extends AbstractSettingComponent {
 	settingEl!: Setting;
 	dropdownComponent!: DropdownComponent;
-	setting!: VariableSelect;
+	setting!: ClassMultiToggle;
 
 	render(): void {
 		if (!this.containerEl) return;
+
 		const title = getTitle(this.setting);
 		const description = getDescription(this.setting);
 
@@ -23,6 +24,8 @@ export class VariableSelectSettingComponent extends AbstractSettingComponent {
 				`${t('Error:')} ${title} ${t('missing default value')}`
 			);
 		}
+
+		let prevValue = this.getPreviousValue();
 
 		const defaultLabel = this.getDefaultOptionLabel();
 
@@ -33,10 +36,9 @@ export class VariableSelectSettingComponent extends AbstractSettingComponent {
 		);
 
 		this.settingEl.addDropdown((dropdown) => {
-			const value = this.settingsManager.getSetting(
-				this.sectionId,
-				this.setting.id
-			);
+			if (this.setting.allowEmpty) {
+				dropdown.addOption('none', '');
+			}
 
 			for (const o of this.setting.options) {
 				if (typeof o === 'string') {
@@ -46,11 +48,11 @@ export class VariableSelectSettingComponent extends AbstractSettingComponent {
 				}
 			}
 
-			dropdown.setValue(
-				value !== undefined ? (value as string) : this.setting.default
-			);
+			dropdown.setValue(prevValue);
+
 			dropdown.onChange((value) => {
 				this.settingsManager.setSetting(this.sectionId, this.setting.id, value);
+				prevValue = value;
 			});
 
 			this.dropdownComponent = dropdown;
@@ -59,7 +61,7 @@ export class VariableSelectSettingComponent extends AbstractSettingComponent {
 		this.settingEl.addExtraButton((b) => {
 			b.setIcon('reset');
 			b.onClick(() => {
-				this.dropdownComponent.setValue(this.setting.default);
+				this.dropdownComponent.setValue(this.setting.default || 'none');
 				this.settingsManager.clearSetting(this.sectionId, this.setting.id);
 			});
 			b.setTooltip(resetTooltip);
@@ -97,5 +99,20 @@ export class VariableSelectSettingComponent extends AbstractSettingComponent {
 		}
 
 		return undefined;
+	}
+
+	private getPreviousValue() {
+		const prevValue = this.settingsManager.getSetting(
+			this.sectionId,
+			this.setting.id
+		) as string | undefined;
+
+		if (prevValue === undefined) {
+			if (this.setting.default) {
+				return this.setting.default;
+			}
+			return 'none';
+		}
+		return prevValue;
 	}
 }

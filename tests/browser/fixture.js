@@ -1,4 +1,4 @@
-import { CSSSettingsManager } from '../../src/SettingsManager';
+import { CSSSettingsManager } from '../../src/settings/SettingsManager';
 import { SettingsMarkup } from '../../src/settingsView/SettingsMarkup';
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import '../../src/css/pickerOverrides.css';

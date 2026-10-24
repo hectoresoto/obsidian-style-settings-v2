@@ -15,8 +15,8 @@ import type {
 	MappedSettings,
 	SettingValue,
 } from './SettingsTypes';
-import { isValidSavedColor } from './ColorUtils';
-import { SettingType } from './settingsView/SettingComponents/types';
+import { isValidSavedColor } from '../color/ColorUtils';
+import { SettingType } from './SettingType';
 import chroma from 'chroma-js';
 
 export type VariableKV = Array<{ key: string; value: string }>;

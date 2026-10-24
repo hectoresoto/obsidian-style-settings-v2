@@ -8,8 +8,8 @@ export default defineConfig([
 		ignores: [
 			'node_modules/**',
 			'main.js',
-			'test-results/**',
-			'playwright-report/**',
+			'tests/test-results/**',
+			'tests/playwright-report/**',
 		],
 	},
 	{

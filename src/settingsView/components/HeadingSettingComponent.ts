@@ -1,4 +1,4 @@
-import { CSSSetting, Heading } from '../../SettingHandlers';
+import { CSSSetting, Heading } from '../../settings/SettingHandlers';
 import { getDescription, getTitle } from '../../Utils';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { ClassMultiToggleSettingComponent } from './ClassMultiToggleSettingComponent';
@@ -10,9 +10,9 @@ import { VariableNumberSliderSettingComponent } from './VariableNumberSliderSett
 import { VariableSelectSettingComponent } from './VariableSelectSettingComponent';
 import { VariableTextSettingComponent } from './VariableTextSettingComponent';
 import { VariableThemedColorSettingComponent } from './VariableThemedColorSettingComponent';
-import { SettingType } from './types';
+import { SettingType } from '../../settings/SettingType';
 import { setIcon, Setting } from 'obsidian';
-import { CSSSettingsManager } from 'src/SettingsManager';
+import { CSSSettingsManager } from '../../settings/SettingsManager';
 
 export function createSettingComponent(
 	parent: AbstractSettingComponent,

@@ -8,14 +8,11 @@
 		"allowJs": true,
 		"noImplicitAny": true,
 		"moduleResolution": "bundler",
-		"paths": {
-			"src/*": ["./src/*"]
-		},
 		"importHelpers": true,
 		"isolatedModules": true,
 		"strictNullChecks": true,
 		"skipLibCheck": true,
 		"lib": ["dom", "es6", "scripthost", "es2018"],
 	},
-  	"include": ["src/*.ts", "src/*.tsx"]
+  	"include": ["src/**/*.ts", "src/**/*.tsx"]
 }

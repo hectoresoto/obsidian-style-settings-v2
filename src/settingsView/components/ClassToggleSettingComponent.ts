@@ -1,4 +1,4 @@
-import { ClassToggle, resetTooltip } from '../../SettingHandlers';
+import { ClassToggle, resetTooltip } from '../../settings/SettingHandlers';
 import { getDescription, getTitle } from '../../Utils';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { Setting, ToggleComponent } from 'obsidian';

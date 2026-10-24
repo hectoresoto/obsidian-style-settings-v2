@@ -1,4 +1,4 @@
-import { InfoText } from '../../SettingHandlers';
+import { InfoText } from '../../settings/SettingHandlers';
 import { getDescription, getTitle } from '../../Utils';
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { MarkdownRenderer, Setting } from 'obsidian';

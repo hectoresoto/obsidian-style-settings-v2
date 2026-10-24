@@ -2,7 +2,7 @@ This is a contributing.md in progress. For now, submit the smallest change you c
 
 ## Local development
 
-Use Node.js 26 (declared in `.node-version`) and pnpm 10.32.1 (pinned in `package.json`).
+Use Node.js 26 (`engines` in `package.json`) and pnpm 10.32.1 (`packageManager` in `package.json`).
 If pnpm is not installed, run `npm install --global pnpm@10.32.1`.
 
 Install the locked dependencies and run the checks:
@@ -17,7 +17,8 @@ pnpm build
 
 ESLint uses `eslint.config.mjs` (flat config) and checks all TypeScript/TSX sources
 under `src/`. `pnpm lint:fix` checks the same files and applies available fixes.
-Both commands fail on errors or warnings. Formatting is handled by Prettier.
+Both commands fail on errors or warnings. Formatting is handled by Prettier,
+configured under the `prettier` key in `package.json`.
 
 TypeScript 7.0 does not expose the legacy compiler API needed by typescript-eslint.
 Following Microsoft's side-by-side setup, `typescript` aliases the official
@@ -31,9 +32,37 @@ See [Microsoft's compatibility guidance](https://devblogs.microsoft.com/typescri
 Run `pnpm dev` to rebuild when source files change. Reload the plugin in
 Obsidian to try the rebuilt files.
 
+## Project layout
+
+```
+src/
+  main.ts            Plugin entry point
+  Utils.ts           Shared helpers (parsing, titles, descriptions)
+  settings/          Settings logic without UI: types, validation, manager, style generation
+  color/             Color validation and color picker helpers
+  modals/            Import and export modals
+  settingsView/      Settings tab, side view and their markup
+    components/      One component per setting type
+  lang/              Translations
+  css/               Plugin styles
+tests/
+  browser/           Playwright regression tests
+  tooling/           Lint configuration tests
+  *.config.mjs       Vitest and Playwright settings
+scripts/             Build and release scripts
+docs/                CSS snippet, screenshots and release notes
+patches/             Fixes applied to dependencies on install
+```
+
+Unit tests (`*.test.ts`) live next to the file they test.
+
+The project root only keeps files that Obsidian or the tools look for there:
+`main.js`, `styles.css`, `manifest.json` and `versions.json` for Obsidian, plus
+`package.json`, the pnpm files, `tsconfig.json` and `eslint.config.mjs`.
+
 ## Style generation boundary
 
-`src/StyleGenerator.ts` converts saved settings, configuration and a snapshot of
+`src/settings/StyleGenerator.ts` converts saved settings, configuration and a snapshot of
 theme variables into CSS, base/light/dark variable lists and diagnostic messages.
 It does not read browser globals, access Obsidian, persist settings or log warnings.
 The original color conversion and CSS serialization behavior is covered by
@@ -41,8 +70,8 @@ compatibility snapshots captured before extraction.
 
 `CSSSettingsManager` owns host operations: reading gradient endpoints from the
 theme, saving settings, applying CSS to the style element, logging diagnostics
-and notifying Obsidian. Shared data types live in `src/SettingsTypes.ts`; shared
-color validation lives in `src/ColorUtils.ts`. Existing manager and utility
+and notifying Obsidian. Shared data types live in `src/settings/SettingsTypes.ts`; shared
+color validation lives in `src/color/ColorUtils.ts`. Existing manager and utility
 import paths re-export those helpers/types for compatibility.
 
 ## Browser regression tests
@@ -68,7 +97,7 @@ reloads, cancellation, reset, color formats, invalid input, exclusive pickers,
 themed transparency, search, import/export (including JSON files and false/zero
 values), configuration removal/restoration and narrow light/dark layouts.
 They also fail on unexpected browser errors. The local server starts and stops
-automatically; failure traces are saved under `test-results/`.
+automatically; failure traces are saved under `tests/test-results/`.
 
 These tests do not launch Obsidian itself. Still check actual vault reloads,
 CSS snippet discovery, installed themes and mobile behavior manually.
